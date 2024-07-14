@@ -1,6 +1,6 @@
 # tests/test_indicators.py  
 import pandas as pd
-from source import indicators
+from source.indicators import VolumeProfileIndicator, StochasticOscillatorIndicator, DonchainChannelsIndicator
 
 INPUT_DATA = pd.DataFrame(data={
     'low': [20000, 20500, 20100, 20100, 20000],
@@ -17,7 +17,7 @@ def test_volume_profile_indicator():
         'volume': [2000.0, 3200.0, 300.0]
     })
 
-    indicator = indicators.VolumeProfileIndicator()
+    indicator = VolumeProfileIndicator()
     result = indicator.calculate(data=INPUT_DATA, number_of_steps = 3)
     pd.testing.assert_frame_equal(result, expected)
 
@@ -34,7 +34,7 @@ def test_stochastic_oscillator_indicator():
         ]
     })
         
-    indicator = indicators.StochasticOscillatorIndicator()
+    indicator = StochasticOscillatorIndicator()
     result = indicator.calculate(data=INPUT_DATA, window_size = 3, d_period = 2)
     pd.testing.assert_frame_equal(result, expected)
 
@@ -46,6 +46,6 @@ def test_donchain_channels_indicator():
         'middle_channel': [20450.0, 20450.0, 20500.0, 20550.0, 20850.0]
     })
         
-    indicator = indicators.DonchainChannelsIndicator()
+    indicator = DonchainChannelsIndicator()
     result = indicator.calculate(data=INPUT_DATA, window_size= 3)
     pd.testing.assert_frame_equal(result, expected)
