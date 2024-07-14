@@ -1,5 +1,5 @@
 colorama==0.4.6
--e git+ssh://git@github.com/rochfedorowicz/CryptoEvolution.git@f017619f7ff026758e3ac5d94e43798c02ebfec8#egg=CryptoEvolution
+-e git+ssh://git@github.com/rochfedorowicz/CryptoEvolution.git@5c14a99dca9ef3b41d2a2fc820b54f2abdb9f83a#egg=CryptoEvolution
 exceptiongroup==1.2.1
 iniconfig==2.0.0
 numpy==2.0.0
