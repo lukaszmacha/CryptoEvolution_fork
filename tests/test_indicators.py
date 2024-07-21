@@ -1,14 +1,14 @@
 # tests/test_indicators.py  
 
 import pandas as pd
-from source.indicators import VolumeProfileIndicator, StochasticOscillatorIndicator, DonchainChannelsIndicator
+from source.indicators import VolumeProfileIndicatorHandler, StochasticOscillatorIndicatorHandler, DonchainChannelsIndicatorHandler, MovingVolumeProfileIndicatorHandler
 
 INPUT_DATA = pd.DataFrame(data={
-    'low': [20000, 20500, 20100, 20100, 20000],
-    'high': [20900, 20900, 21000, 20900, 21700],
-    'open': [20050, 20600, 20400, 20800, 20200],
-    'close': [20600, 20400, 20800, 20200, 20900],
-    'volume': [1000, 1200, 1100, 1300, 900]
+    'low': [20000.0, 20500.0, 20100.0, 20100.0, 20000.0],
+    'high': [20900.0, 20900.0, 21000.0, 20900.0, 21700.0],
+    'open': [20050.0, 20600.0, 20400.0, 20800.0, 20200.0],
+    'close': [20600.0, 20400.0, 20800.0, 20200.0, 20900.0],
+    'volume': [1000.0, 1200.0, 1100.0, 1300.0, 900.0]
 })
 
 def test_volume_profile_indicator():
@@ -18,8 +18,8 @@ def test_volume_profile_indicator():
         'volume': [2000.0, 3200.0, 300.0]
     })
 
-    indicator = VolumeProfileIndicator()
-    result = indicator.calculate(data=INPUT_DATA, number_of_steps = 3)
+    indicator = VolumeProfileIndicatorHandler(number_of_steps = 3)
+    result = indicator.calculate(data=INPUT_DATA)
     pd.testing.assert_frame_equal(result, expected)
 
 def test_stochastic_oscillator_indicator():
@@ -35,8 +35,8 @@ def test_stochastic_oscillator_indicator():
         ]
     })
         
-    indicator = StochasticOscillatorIndicator()
-    result = indicator.calculate(data=INPUT_DATA, window_size = 3, d_period = 2)
+    indicator = StochasticOscillatorIndicatorHandler(window_size = 3, d_period = 2)
+    result = indicator.calculate(data=INPUT_DATA)
     pd.testing.assert_frame_equal(result, expected)
 
 def test_donchain_channels_indicator():
@@ -47,6 +47,16 @@ def test_donchain_channels_indicator():
         'middle_channel': [20450.0, 20450.0, 20500.0, 20550.0, 20850.0]
     })
         
-    indicator = DonchainChannelsIndicator()
-    result = indicator.calculate(data=INPUT_DATA, window_size= 3)
+    indicator = DonchainChannelsIndicatorHandler(window_size = 3)
+    result = indicator.calculate(data=INPUT_DATA)
+    pd.testing.assert_frame_equal(result, expected)
+
+def test_moving_biggest_volume_price_indicator():
+
+    expected = pd.DataFrame(data={
+        'moving_volume_profile': [200.0, 800.0, 1070.0, 1395.0, 1580.0]
+    })
+        
+    indicator = MovingVolumeProfileIndicatorHandler(window_size = 3, number_of_steps = 5)
+    result = indicator.calculate(data=INPUT_DATA)
     pd.testing.assert_frame_equal(result, expected)
