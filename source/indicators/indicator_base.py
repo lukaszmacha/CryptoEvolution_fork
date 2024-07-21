@@ -3,8 +3,11 @@
 import pandas as pd
 import numpy as np
 
-class IndicatorBase():
+class IndicatorHandlerBase():
 
-    def calculate(self, data: pd.DataFrame, *args) -> pd.DataFrame:
+    def __init__(self, *args) -> None:
+        raise NotImplementedError
+        
+    def calculate(self, data: pd.DataFrame) -> pd.DataFrame:
         raise NotImplementedError
         

@@ -3,13 +3,16 @@
 from .indicator_base import *
 from collections import defaultdict
 
-class VolumeProfileIndicator(IndicatorBase):
+class VolumeProfileIndicatorHandler(IndicatorHandlerBase):
 
-    def calculate(self, data: pd.DataFrame, number_of_steps: int = 40) -> pd.DataFrame:
+    def __init__(self, number_of_steps: int = 40) -> None:
+        self.number_of_steps = number_of_steps
+
+    def calculate(self, data: pd.DataFrame) -> pd.DataFrame:
         volume_profile = defaultdict(float)
         data_min = data['low'].min()
         data_max = data['high'].max()
-        step = (data_max - data_min) / (number_of_steps - 1)
+        step = (data_max - data_min) / (self.number_of_steps - 1)
 
         for _, row in data.iterrows():
             equalized_low = row['low'] // step * step
@@ -21,6 +24,7 @@ class VolumeProfileIndicator(IndicatorBase):
             for price in price_range:
                 volume_profile[price] += volume_per_step
 
-        profile_df = pd.DataFrame(list(volume_profile.items()), columns=['price', 'volume'])
+        profile_df = pd.DataFrame(list(volume_profile.items()), columns = ['price', 'volume'])
         profile_df.sort_values(by='price', inplace=True)
+
         return profile_df

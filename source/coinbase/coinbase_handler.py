@@ -12,21 +12,21 @@ MAX_NUMBER_OF_CANDLES_PER_REQUEST = 300
 
 class CoinBaseHandler:
 
-    def __convert_date_to_timestamp(self, date_str, date_format="%Y-%m-%d %H:%M:%S", target_timezone=pytz.UTC):
+    def __convert_date_to_timestamp(self, date_str: str, date_format: str = "%Y-%m-%d %H:%M:%S", target_timezone = pytz.UTC) -> int:
         return int(datetime.strptime(date_str, date_format).replace(tzinfo=target_timezone).timestamp())
 
-    async def __send_request_to_coinbase(self, session, url, pid):
+    async def __send_request_to_coinbase(self, session: aiohttp.ClientSession, url: str, pid: int) -> list:
         try:
             async with session.get(url) as response:
                  data = await response.json()
                  if 'message' in data and data['message'] == 'Public rate limit exceeded':
-                     raise ValueError("Exceeded public rate! Retrying in 30s...")
+                     raise ValueError("Exceeded public rate! Retrying in 5s...")
                  return data
         except:
-            await asyncio.sleep(1)
+            await asyncio.sleep(5)
             return await self.__send_request_to_coinbase(session, url, pid)
 
-    async def get_candles_for(self, trading_pair, start_date, end_date, granularity):
+    async def get_candles_for(self, trading_pair: str, start_date: str, end_date: str, granularity: Granularity) -> pd.DataFrame:
         if granularity not in Granularity:
             raise ValueError(f"{granularity} is not an value of Granularity enum!")
         
@@ -52,7 +52,7 @@ class CoinBaseHandler:
             df.sort_values(by='time', inplace=True)
             return df
     
-    async def get_possible_pairs(self):
+    async def get_possible_pairs(self) -> pd.DataFrame:
         async with aiohttp.ClientSession() as session:
             url = f'https://api.pro.coinbase.com/products/'
             response = await asyncio.gather(self.__send_request_to_coinbase(session, url, 0))
