@@ -1,4 +1,5 @@
-# indicators/volume_profile_indicator.py 
+# indicators/volume_profile_indicator.py
+
 from .indicator_base import *
 from collections import defaultdict
 

@@ -1,4 +1,5 @@
-# indicators/stochastic_oscillator_indicator.py 
+# indicators/stochastic_oscillator_indicator.py
+
 from .indicator_base import *
 
 class StochasticOscillatorIndicator(IndicatorBase):
