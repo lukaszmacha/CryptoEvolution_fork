@@ -4,6 +4,7 @@ async-timeout==4.0.3
 asyncio==3.4.3
 attrs==23.2.0
 colorama==0.4.6
+coverage==7.6.0
 exceptiongroup==1.2.1
 frozenlist==1.4.1
 idna==3.7
@@ -15,6 +16,9 @@ pandas==2.2.2
 pluggy==1.5.0
 pytest==8.2.2
 pytest-asyncio==0.23.8
+pytest-cov==5.0.0
+pytest-cover==3.0.0
+pytest-coverage==0.0
 python-dateutil==2.9.0.post0
 pytz==2024.1
 six==1.16.0
