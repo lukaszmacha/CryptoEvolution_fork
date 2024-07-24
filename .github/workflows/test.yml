@@ -32,4 +32,4 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest
+        pytest --cov-config=.coveragerc --cov=source --cov-report term-missing

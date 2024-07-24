@@ -25,6 +25,7 @@ async def test_prepare_data__no_indicators(mock_get_candles_for):
     handler = DataHandler()
     result = await handler.prepare_data('BTC-USD', '2020-03-01 00:00:00', '2020-03-03 00:00:00', Granularity.ONE_DAY)
     pd.testing.assert_frame_equal(result, expected)
+    mock_get_candles_for.assert_called()
 
 @pytest.mark.asyncio
 @patch('source.coinbase.CoinBaseHandler.get_candles_for', new_callable=AsyncMock)
@@ -44,3 +45,4 @@ async def test_prepare_data__with_indicators(mock_get_candles_for):
     handler = DataHandler(indicators)
     result = await handler.prepare_data('BTC-USD', '2020-03-01 00:00:00', '2020-03-03 00:00:00', Granularity.ONE_DAY)
     pd.testing.assert_frame_equal(result, expected)
+    mock_get_candles_for.assert_called()
