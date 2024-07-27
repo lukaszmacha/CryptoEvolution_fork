@@ -12,6 +12,15 @@ INPUT_DATA = pd.DataFrame(data={
 })
 
 def test_volume_profile_indicator():
+    """
+    Tests the VolumeProfileIndicatorHandler.
+
+    Verifies that the VolumeProfileIndicatorHandler calculates the volume profile
+    for given input data with a specified number of steps.
+
+    Asserts:
+        The result DataFrame matches the expected DataFrame.
+    """
 
     expected = pd.DataFrame(data={
         'price': [19550.0, 20400.0, 21250.0],
@@ -23,6 +32,19 @@ def test_volume_profile_indicator():
     pd.testing.assert_frame_equal(result, expected)
 
 def test_stochastic_oscillator_indicator():
+    """
+    Tests the StochasticOscillatorIndicatorHandler.
+
+    Verifies that the StochasticOscillatorIndicatorHandler calculates the K% and D%
+    values for given input data with specified window size and D period.
+
+    Expected DataFrame:
+        K%: Calculated as (close - low) / (high - low) * 100 for each row.
+        D%: Calculated as the rolling mean of K% with the specified D period.
+
+    Asserts:
+        The result DataFrame matches the expected DataFrame.
+    """
 
     expected = pd.DataFrame(data={
         'K%': [6.0/9 * 100 , 4.0/9 * 100, 8.0/10 * 100, 1.0/9 * 100, 9.0/17 * 100],
@@ -40,6 +62,15 @@ def test_stochastic_oscillator_indicator():
     pd.testing.assert_frame_equal(result, expected)
 
 def test_donchain_channels_indicator():
+    """
+    Tests the DonchainChannelsIndicatorHandler.
+
+    Verifies that the DonchainChannelsIndicatorHandler calculates the upper,
+    lower, and middle Donchian channels for given input data with a specified window size.
+
+    Asserts:
+        The result DataFrame matches the expected DataFrame.
+    """
 
     expected = pd.DataFrame(data={
         'upper_channel': [20900.0, 20900.0, 21000.0, 21000.0, 21700.0],
@@ -52,6 +83,15 @@ def test_donchain_channels_indicator():
     pd.testing.assert_frame_equal(result, expected)
 
 def test_moving_biggest_volume_price_indicator():
+    """
+    Test the MovingVolumeProfileIndicatorHandler.
+
+    This test verifies that the MovingVolumeProfileIndicatorHandler calculates the moving
+    volume profile for given input data with a specified window size and number of steps.
+
+    Asserts:
+        The result DataFrame matches the expected DataFrame.
+    """
 
     expected = pd.DataFrame(data={
         'moving_volume_profile': [200.0, 800.0, 1070.0, 1395.0, 1580.0]

@@ -3,12 +3,36 @@
 from .volume_profile_indicator import *
 
 class MovingVolumeProfileIndicatorHandler(VolumeProfileIndicatorHandler):
+    """
+    Implements moving volume profile indicator. Uses normal volume profile indicator
+    to calculate volume profile for the given window size. It denotes volume traded
+    at certain price over the period given by window size.
+    """
 
     def __init__(self, window_size: int = 14, number_of_steps: int = 40) -> None:
+        """
+        Class constructor.
+
+        Parameters:
+            window_size (int): Length of window that indicator should be applied over.
+            number_of_steps (int): Number of bins that price should be put into
+                while creating volume profile for certain window.
+        """
+
         super().__init__(number_of_steps)
         self.window_size = window_size
 
     def calculate(self, data: pd.DataFrame) -> pd.DataFrame:
+        """
+        Calculates moving volume profile indicator values for given data.
+
+        Parameters:
+            data (pd.DataFrame): Data frame with input data.
+
+        Returns:
+            (pd.DataFrame): Output data with calculated moving volume profile values.
+        """
+
         moving_volume_price_df = pd.DataFrame(index = data.index)
 
         for i, (index, row) in enumerate(data.iterrows()):
