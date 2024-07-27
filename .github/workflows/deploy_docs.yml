@@ -14,16 +14,24 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: Check out gh-pages branch
-      run: |
-        git fetch origin
-        git checkout -b gh-pages origin/gh-pages
+      with:
+        ref: main
 
     - name: Copy source files
       run: |
+        mkdir -p code_copy
+        cp -r source/* code_copy/
+
+    - name: Checkout gh-pages branch
+      uses: actions/checkout@v2
+      with:
+        ref: gh-pages
+        path: gh-pages
+
+    - name: Copy code to gh-pages
+      run: |
         mkdir -p gh-pages/source
-        cp -r source/* gh-pages/source/
+        cp -r code_copy/* gh-pages/source/
 
     - name: Install Sphinx
       run: |
@@ -53,6 +61,7 @@ jobs:
       run: |
         cd gh-pages
         git add .
+        git reset source/*
         git commit -m "[DOC] Deploy documentation from ${{ github.sha }}"
         git push origin gh-pages
       env:
