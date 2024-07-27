@@ -18,10 +18,10 @@ jobs:
       with:
         ref: main
 
-    - name: Copy source files
+    - name: Copy requirements
       run: |
-        mkdir -p code_copy
-        cp -r source/* code_copy/
+        mkdir -p temp_files
+        cp requirements.txt temp_files/.
 
     - name: Checkout gh-pages branch
       uses: actions/checkout@v2
@@ -29,15 +29,15 @@ jobs:
         ref: gh-pages
         path: gh-pages
 
-    - name: Copy code to gh-pages
-      run: |
-        mkdir -p gh-pages/source
-        cp -r code_copy/* gh-pages/source/
+    - name: Paste requirements to gh-pages
+      run: cp temp_files/requirements.txt gh-pages/.
 
-    - name: Install Sphinx
+    - name: Install dependencies
       run: |
+        cd gh-pages/
         python -m pip install --upgrade pip
-        pip install sphinx
+        sed -i 's/#-/-/' requirements.txt
+        pip install -r requirements.txt
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=gh-pages" >> $GITHUB_ENV
@@ -70,7 +70,7 @@ jobs:
       run: |
         cd gh-pages
         git add .
-        git reset source/*
+        git reset requirements.txt
         git commit -m "[DOC] Deploy documentation from ${{ github.sha }}"
         git push origin gh-pages
       env:
