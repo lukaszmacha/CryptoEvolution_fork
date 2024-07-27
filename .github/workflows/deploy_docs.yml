@@ -1,6 +1,7 @@
 name: Deploy Documentation
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: ["Run Tests"]
     types:
@@ -8,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -56,6 +57,11 @@ jobs:
             <p><a href="docs/html/index.html">Latest Documentation</a></p>
         </body>
         </html>' > gh-pages/index.html
+
+    - name: Configure Git
+      run: |
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
 
     - name: Push changes
       run: |
