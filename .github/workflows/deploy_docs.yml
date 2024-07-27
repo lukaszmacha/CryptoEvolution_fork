@@ -1,0 +1,68 @@
+name: Deploy Documentation
+
+on:
+  workflow_run:
+    workflows: ["Run Tests"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: main
+
+    - name: Copy source files
+      run: |
+        mkdir -p code_copy
+        cp -r source/* code_copy/
+
+    - name: Checkout gh-pages branch
+      uses: actions/checkout@v2
+      with:
+        ref: gh-pages
+        path: gh-pages
+
+    - name: Copy code to gh-pages
+      run: |
+        mkdir -p gh-pages/source
+        cp -r code_copy/* gh-pages/source/
+
+    - name: Install Sphinx
+      run: |
+        python -m pip install --upgrade pip
+        pip install sphinx
+
+    - name: Generate documentation
+      run: |
+        cd gh-pages/
+        make html
+
+    - name: Add personalized index.html
+      run: |
+        echo '<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Project Documentation</title>
+        </head>
+        <body>
+            <h1>Welcome to the Project Documentation</h1>
+            <p><a href="docs/html/index.html">Latest Documentation</a></p>
+        </body>
+        </html>' > gh-pages/index.html
+
+    - name: Push changes
+      run: |
+        cd gh-pages
+        git add .
+        git reset source/*
+        git commit -m "[DOC] Deploy documentation from ${{ github.sha }}"
+        git push origin gh-pages
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
