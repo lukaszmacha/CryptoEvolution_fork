@@ -28,6 +28,13 @@ jobs:
       with:
         ref: gh-pages
         path: gh-pages
+  
+    - name: Clean old documentation
+      run: |
+        cd gh-pages/
+        rm -rf docs/html
+        rm -rf docs/_static
+        rm -rf docs/_sources
 
     - name: Paste requirements to gh-pages
       run: cp temp_files/requirements.txt gh-pages/.
