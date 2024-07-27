@@ -18,6 +18,20 @@ MOCKED_COINBASE_HANDLER_DATA = pd.DataFrame(data={
 @pytest.mark.asyncio
 @patch('source.coinbase.CoinBaseHandler.get_candles_for', new_callable=AsyncMock)
 async def test_prepare_data__no_indicators(mock_get_candles_for):
+    """
+    Tests the prepare_data method of DataHandler without indicators.
+
+    Verifies that the prepare_data method do not modify data when there is no specified
+    indicators to the data. The get_candles_for method of CoinBaseHandler is mocked to
+    return predefined data.
+
+    Expected Result:
+        Same as mocked data.
+
+    Asserts:
+        The result DataFrame matches the expected DataFrame.
+        The get_candles_for method was called once.
+    """
 
     mock_get_candles_for.return_value = MOCKED_COINBASE_HANDLER_DATA
     expected = MOCKED_COINBASE_HANDLER_DATA
@@ -30,6 +44,20 @@ async def test_prepare_data__no_indicators(mock_get_candles_for):
 @pytest.mark.asyncio
 @patch('source.coinbase.CoinBaseHandler.get_candles_for', new_callable=AsyncMock)
 async def test_prepare_data__with_indicators(mock_get_candles_for):
+    """
+    Tests the prepare_data method of DataHandler with indicators.
+
+    Verifies that the prepare_data method applies the specified indicators to the data.
+    The get_candles_for method of CoinBaseHandler is mocked to return predefined data,
+    and two indicators are applied.
+
+    Expected Result:
+        Original data combined with the results of the mean_high and std_low indicators.
+
+    Asserts:
+        The result DataFrame is extended.
+        The get_candles_for method was called once.
+    """
 
     mock_get_candles_for.return_value = MOCKED_COINBASE_HANDLER_DATA
 

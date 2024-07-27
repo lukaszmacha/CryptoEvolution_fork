@@ -4,11 +4,34 @@ from .indicator_base import *
 from collections import defaultdict
 
 class VolumeProfileIndicatorHandler(IndicatorHandlerBase):
+    """
+    Implements static volume profile indicator. It denotes volume traded at
+    certain price levels. Calculated data can not be directly mapped to input
+    data and should be treated as the separate chart.
+    """
 
     def __init__(self, number_of_steps: int = 40) -> None:
+        """
+        Class constructor.
+
+        Parameters:
+            number_of_steps (int): Number of bins that price should be put into
+                while creating volume profile.
+        """
+
         self.number_of_steps = number_of_steps
 
     def calculate(self, data: pd.DataFrame) -> pd.DataFrame:
+        """
+        Calculates static volume profile indicator values for given data.
+
+        Parameters:
+            data (pd.DataFrame): Data frame with input data.
+
+        Returns:
+            (pd.DataFrame): Output data with calculated static volume profile values.
+        """
+
         volume_profile = defaultdict(float)
         data_min = data['low'].min()
         data_max = data['high'].max()

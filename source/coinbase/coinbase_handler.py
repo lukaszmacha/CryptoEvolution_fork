@@ -11,11 +11,43 @@ from ..utils import Granularity
 MAX_NUMBER_OF_CANDLES_PER_REQUEST = 300
 
 class CoinBaseHandler:
+    """
+    Responsible for handling request towards Coinbase API.
+    """
 
     def __convert_date_to_timestamp(self, date_str: str, date_format: str = "%Y-%m-%d %H:%M:%S", target_timezone = pytz.UTC) -> int:
+        """
+        Converts date given by string into integer timestamp.
+
+        Parameters:
+            date_str (str): String representing certain date.
+            date_format (str): String representing format that certain date is written in.
+            target_timezone (Any): Timezone given by any type of value compatible with datetime library.
+
+        Returns:
+            (int): Timestamp converted from input date.
+        """
+
         return int(datetime.strptime(date_str, date_format).replace(tzinfo=target_timezone).timestamp())
 
     async def __send_request_to_coinbase(self, session: aiohttp.ClientSession, url: str, pid: int) -> list:
+        """
+        Sends request towards Coinbase API and handles exceedance of public rates by repeating
+        request after certain time.
+
+        Parameters:
+            session (aiohttp.ClientSession): Session used to send request with.
+            url (str): URL address that certain request is sent towards.
+            pid (int): Request indentification number.
+        
+        Raises:
+            ValueError: If public rates are exceeded. Will try to handle that and reattempt 
+                to sent request.
+
+        Returns:
+            (list): List of values returned by Coinbase API for certain request.
+        """
+
         try:
             async with session.get(url) as response:
                  data = await response.json()
@@ -27,6 +59,24 @@ class CoinBaseHandler:
             return await self.__send_request_to_coinbase(session, url, pid)
 
     async def get_candles_for(self, trading_pair: str, start_date: str, end_date: str, granularity: Granularity) -> pd.DataFrame:
+        """
+        Collects data from Coinbase API given starting date, ending date, granularity and trainding pair. Dependent on amount of
+        data segments to fetch, might take some time. Especially, if request exceeds public rates.
+
+        Parameters:
+            trading_pair (str): String representing unique trainding pair symbol.
+            start_date (str): String representing date that collected data should start from.
+            end_date (str): String representing date that collected data should finish at.
+            granularity (Granularity): Enum specifying resolution of collected data - e.g. each 
+                15 minutes or 1 hour or 6 hours is treated separately
+        
+        Raises:
+            ValueError: If given granularity is not member if Granularity enum.
+
+        Returns:
+            (pd.DataFrame): Collected data frame.
+        """
+
         if granularity not in Granularity:
             raise ValueError(f"{granularity} is not an value of Granularity enum!")
         
@@ -53,6 +103,13 @@ class CoinBaseHandler:
             return df
     
     async def get_possible_pairs(self) -> pd.DataFrame:
+        """
+        Collects data from Coinbase API reagrding all possible traiding pairs.
+
+        Returns:
+            (pd.DataFrame): Fetched possible traiding pairs inside data frame.
+        """
+
         async with aiohttp.ClientSession() as session:
             url = f'https://api.pro.coinbase.com/products/'
             response = await asyncio.gather(self.__send_request_to_coinbase(session, url, 0))

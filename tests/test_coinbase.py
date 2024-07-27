@@ -7,6 +7,17 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_get_candles_for():
+    """
+    Tests the get_candles_for method of CoinBaseHandler.
+
+    Verifies that the get_candles_for method retrieves the correct candle data
+    for a given trading pair and date range. The expected data is hardcoded for the 
+    date range from '2020-03-01' to '2020-03-03' for the 'BTC-USD' pair with a granularity
+    of one day.
+
+    Asserts:
+        The result DataFrame matches the expected DataFrame.
+    """
 
     expected = pd.DataFrame(data={
         'low': [8400.00, 8487.33, 8635.31],
@@ -22,6 +33,15 @@ async def test_get_candles_for():
 
 @pytest.mark.asyncio
 async def test_get_possible_pairs():
+    """
+    Tests the get_possible_pairs method of CoinBaseHandler.
+
+    Verifies that the get_possible_pairs method retrieves the correct trading pairs
+    available on the exchange. The expected data is hardcoded for the first three trading pairs.
+
+    Asserts:
+        The result DataFrame matches the expected DataFrame.
+    """
         
     expected = pd.DataFrame(data={
         'base_currency': ['00','1INCH', '1INCH'],

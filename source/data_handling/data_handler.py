@@ -5,12 +5,36 @@ from ..utils import Granularity
 from ..coinbase import CoinBaseHandler
 
 class DataHandler():
+    """
+    Responsible for data handling. Including data collection and preparation.
+    """
 
     def __init__(self, list_of_indicators_to_apply: list = []) -> None:
+        """
+        Class constructor.
+
+        Parameters:
+            list_of_indicators_to_apply (list): List of indicators further to apply.
+        """
+
         self.indicators = list_of_indicators_to_apply
         self.coinbase = CoinBaseHandler()
 
     async def prepare_data(self, trading_pair: str, start_date: str, end_date: str, granularity: Granularity) -> pd.DataFrame:
+        """
+        Collects data from coinbase API and extends it with assigned list of indicators.
+
+        Parameters:
+            trading_pair (str): String representing unique trainding pair symbol.
+            start_date (str): String representing date that collected data should start from.
+            end_date (str): String representing date that collected data should finish at.
+            granularity (Granularity): Enum specifying resolution of collected data - e.g. each 
+                15 minutes or 1 hour or 6 hours is treated separately
+
+        Returns:
+            (pd.DataFrame): Collected data extended with given indicators.
+        """
+
         data = await self.coinbase.get_candles_for(trading_pair, start_date, end_date, granularity)
         
         if self.indicators:
