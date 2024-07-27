@@ -70,7 +70,7 @@ jobs:
     - name: Push changes
       run: |
         cd gh-pages
-        git rm --cached -rf src/cryptoevolutionpackage || true
+        rm -rf src/cryptoevolutionpackage || true
         git add .
         git reset requirements.txt
         git commit -m "[DOC] Deploy documentation from ${{ github.sha }}"
