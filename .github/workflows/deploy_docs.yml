@@ -45,7 +45,7 @@ jobs:
     - name: Generate documentation
       run: |
         cd gh-pages/
-        mkdir -p docs/html/_static
+        mkdir -p docs_env_setup/html/_static
         make html
 
     - name: Add personalized index.html
@@ -70,7 +70,7 @@ jobs:
     - name: Push changes
       run: |
         cd gh-pages
-        git rm --cached -rf src/cryptoevolutionpackage
+        git rm --cached -rf src/cryptoevolutionpackage || true
         git add .
         git reset requirements.txt
         git commit -m "[DOC] Deploy documentation from ${{ github.sha }}"
