@@ -21,15 +21,19 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
+
       - name: Checkout gh-pages branch
         uses: actions/checkout@v3
         with:
           ref: gh-pages
 
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=gh-pages" >> $GITHUB_ENV
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: 'docs/html'
 
       - name: Deploy to GitHub Pages
         id: deployment
