@@ -61,7 +61,7 @@ jobs:
         cp -r temp_files/htmlcov gh-pages/reports/$DATE/.
         cp temp_files/report.html gh-pages/reports/$DATE/.
         cp temp_files/style.css gh-pages/reports/assets/.
-        sed -i 's|assets\\style.css|..\\assets\\style.css|' gh-pages/reports/$DATE/report.html
+        sed -i 's|<link href="assets/style.css" rel="stylesheet" type="text/css"/>|<link href="../assets/style.css" rel="stylesheet" type="text/css"/>|' gh-pages/reports/$DATE/report.html
         sed -i '/<\/html>/i\  <h2> Coverage </h2>\n  <p> Go to <a href="htmlcov\\index.html"> report </a></p>' gh-pages/reports/$DATE/report.html
 
     - name: Set PYTHONPATH
