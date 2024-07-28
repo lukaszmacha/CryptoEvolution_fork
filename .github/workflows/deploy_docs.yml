@@ -51,7 +51,6 @@ jobs:
       run: |
         cd gh-pages/
         make html
-        mv docs/html/_static docs/html/static
 
     - name: Add personalized index.html
       run: |
