@@ -20,8 +20,7 @@ release = '0.1'
 
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.githubpages'
+    'sphinx.ext.napoleon'
 ]
 
 autodoc_default_options = {
@@ -32,6 +31,8 @@ autodoc_default_options = {
     'inherited-members': True,
     'show-inheritance': True,
 }
+
+add_module_names = False
 
 templates_path = ['_templates']
 exclude_patterns = []
