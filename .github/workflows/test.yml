@@ -1,4 +1,4 @@
-name: Run Tests
+name: Run tests
 
 on:
   push:
@@ -32,4 +32,66 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest --cov-config=.coveragerc --cov=source --cov-report term-missing
+        pytest --cov-config=.coveragerc --cov=source --cov-report=html --html=report.html
+      
+    - name: Copy reports
+      if: ${{ success() }}
+      run: |
+        mkdir -p temp_files
+        cp -r htmlcov temp_files/.
+        cp report.html temp_files/.
+        cp assets/style.css temp_files/.
+
+    - name: Checkout gh-pages branch
+      uses: actions/checkout@v2
+      with:
+        ref: gh-pages
+        path: gh-pages
+
+    - name: Get current date
+      id: get_date
+      run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+    - name: Paste reports to gh-pages
+      run: |
+        mkdir -p gh-pages/reports
+        mkdir -p gh-pages/reports/assets
+        mkdir -p gh-pages/reports/$DATE
+        cp -r temp_files/htmlcov gh-pages/reports/$DATE/.
+        cp temp_files/report.html gh-pages/reports/$DATE/.
+        cp temp_files/style.css gh-pages/reports/assets/.
+        sed -i 's|assets\\style.css|..\\assets\\style.css|' gh-pages/reports/$DATE/report.html
+
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=gh-pages" >> $GITHUB_ENV
+
+    - name: Create index.html with links to all reports
+      run: |
+        echo '<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Project Documentation</title>
+        </head>
+        <body>
+            <h1>Welcome to the Project Documentation</h1>' > gh-pages/index.html
+        find gh-pages/reports -name report.html | while read report; do
+          rel_path=$(echo $report | sed 's|gh-pages/||')
+          echo "<p><a href=\"$rel_path\">$rel_path</a></p>" >> gh-pages/index.html
+        done
+        echo '</body>
+        </html>' >> gh-pages/index.html
+
+    - name: Configure Git
+      run: |
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+
+    - name: Push changes
+      run: |
+        cd gh-pages
+        git add .
+        git commit -m "[DOC] Deploy reports from ${{ github.sha }}"
+        git push origin gh-pages
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
