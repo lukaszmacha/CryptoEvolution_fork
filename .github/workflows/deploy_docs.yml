@@ -50,8 +50,8 @@ jobs:
     - name: Generate documentation
       run: |
         cd gh-pages/
-        mkdir -p docs_env_setup/html/_static
         make html
+        mv docs/html/_static docs/html/static
 
     - name: Add personalized index.html
       run: |
