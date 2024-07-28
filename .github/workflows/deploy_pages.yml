@@ -31,7 +31,7 @@ jobs:
         run: echo "PYTHONPATH=gh-pages" >> $GITHUB_ENV
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v2.0.0
         with:
           path: 'docs/html'
 
