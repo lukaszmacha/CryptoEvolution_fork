@@ -32,9 +32,7 @@ jobs:
     - name: Clean old documentation
       run: |
         cd gh-pages/
-        rm -rf docs/html
-        rm -rf docs/_static
-        rm -rf docs/_sources
+        rm -rf docs/
 
     - name: Paste requirements to gh-pages
       run: cp temp_files/requirements.txt gh-pages/.
@@ -52,7 +50,7 @@ jobs:
     - name: Generate documentation
       run: |
         cd gh-pages/
-        mkdir -p docs_env_setup/html/_static
+        mv docs/html/_static docs/html/static
         make html
 
     - name: Add personalized index.html
