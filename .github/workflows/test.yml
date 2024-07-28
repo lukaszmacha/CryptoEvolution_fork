@@ -39,6 +39,7 @@ jobs:
       run: |
         mkdir -p temp_files
         cp -r htmlcov temp_files/.
+        rm -r temp_files/htmlcov/.gitignore
         cp report.html temp_files/.
         cp assets/style.css temp_files/.
 
@@ -61,6 +62,7 @@ jobs:
         cp temp_files/report.html gh-pages/reports/$DATE/.
         cp temp_files/style.css gh-pages/reports/assets/.
         sed -i 's|assets\\style.css|..\\assets\\style.css|' gh-pages/reports/$DATE/report.html
+        sed -i '/<\/html>/i\  <h2> Coverage </h2>\n  <p> Go to <a href="htmlcov\\index.html"> report </a></p>' gh-pages/reports/$DATE/report.html
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=gh-pages" >> $GITHUB_ENV
