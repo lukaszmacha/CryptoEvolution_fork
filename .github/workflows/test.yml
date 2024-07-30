@@ -51,7 +51,7 @@ jobs:
 
     - name: Get current date
       id: get_date
-      run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      run: echo "DATE=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
 
     - name: Paste reports to gh-pages
       run: |
@@ -61,7 +61,7 @@ jobs:
         cp -r temp_files/htmlcov gh-pages/reports/$DATE/.
         cp temp_files/report.html gh-pages/reports/$DATE/.
         cp temp_files/style.css gh-pages/reports/assets/.
-        sed -i 's|assets\\style.css|..\\assets\\style.css|' gh-pages/reports/$DATE/report.html
+        sed -i 's|<link href="assets/style.css" rel="stylesheet" type="text/css"/>|<link href="../assets/style.css" rel="stylesheet" type="text/css"/>|' gh-pages/reports/$DATE/report.html
         sed -i '/<\/html>/i\  <h2> Coverage </h2>\n  <p> Go to <a href="htmlcov\\index.html"> report </a></p>' gh-pages/reports/$DATE/report.html
 
     - name: Set PYTHONPATH
@@ -76,7 +76,8 @@ jobs:
             <title>Project Documentation</title>
         </head>
         <body>
-            <h1>Welcome to the Project Documentation</h1>' > gh-pages/index.html
+            <h1>Welcome to the Project Documentation</h1>
+            <p><a href="docs/html/index.html">Latest Documentation</a></p>' > gh-pages/index.html
         find gh-pages/reports -name report.html | while read report; do
           rel_path=$(echo $report | sed 's|gh-pages/||')
           echo "<p><a href=\"$rel_path\">$rel_path</a></p>" >> gh-pages/index.html
