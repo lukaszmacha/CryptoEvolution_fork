@@ -41,7 +41,7 @@ class CoinBaseHandler:
             pid (int): Request indentification number.
         
         Raises:
-            ValueError: If public rates are exceeded. Will try to handle that and reattempt 
+            RuntimeError: If public rates are exceeded. Will try to handle that and reattempt 
                 to sent request.
 
         Returns:
@@ -52,7 +52,7 @@ class CoinBaseHandler:
             async with session.get(url) as response:
                  data = await response.json()
                  if 'message' in data and data['message'] == 'Public rate limit exceeded':
-                     raise ValueError("Exceeded public rate! Retrying in 5s...")
+                     raise RuntimeError("Exceeded public rate! Retrying in 5s...")
                  return data
         except:
             await asyncio.sleep(5)
