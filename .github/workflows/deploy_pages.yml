@@ -39,9 +39,10 @@ jobs:
         uses: actions/upload-pages-artifact@v3.0.0
         with:
           path: '.'
+          artifact_name: gh-pages-artifact
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v3
         with:
-          publish_dir: '.'
+          artifact_name: gh-pages-artifact
