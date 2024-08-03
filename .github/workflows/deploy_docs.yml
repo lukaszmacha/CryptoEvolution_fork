@@ -56,7 +56,7 @@ jobs:
     - name: Add personalized index.html
       run: |
         cd gh-pages
-        python scripts/generate_index.py > index.html
+        python scripts/generate_index.py | tee index.html
 
     - name: Configure Git
       run: |
