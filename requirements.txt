@@ -12,7 +12,7 @@ cffi==1.16.0
 charset-normalizer==3.3.2
 colorama==0.4.6
 coverage==7.6.0
-#-e git+https://github.com/rochfedorowicz/CryptoEvolution.git@59aea6c4f44be80528f57cac562493ba28541389#egg=CryptoEvolutionPackage
+#-e git+https://github.com/rochfedorowicz/CryptoEvolution.git@9a37c883a9b0c1e196dca4c6c5a9ccd3ce06bc25#egg=CryptoEvolutionPackage
 cryptography==43.0.0
 docutils==0.21.2
 exceptiongroup==1.2.2
@@ -33,6 +33,7 @@ pluggy==1.5.0
 py-partiql-parser==0.5.5
 pycparser==2.22
 Pygments==2.18.0
+pyOpenSSL==24.2.1
 pytest==8.3.2
 pytest-asyncio==0.23.8
 pytest-cov==5.0.0
