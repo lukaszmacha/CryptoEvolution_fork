@@ -14,46 +14,41 @@ html_template = '''
             margin: 0;
             padding: 0;
             background-color: #f4f4f9;
-        }}
-        .container {{
-            width: 80%;
-            margin: auto;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }}
         header {{
             background: #333;
             color: #fff;
-            padding-top: 30px;
-            min-height: 70px;
-            border-bottom: #77aaff 3px solid;
-        }}
-        header h1 {{
+            padding: 20px 0;
             text-align: center;
             text-transform: uppercase;
-            margin: 0;
+            font-size: 1.5em;
         }}
-        nav {{
-            margin-top: 10px;
-        }}
-        nav a {{
-            color: #333;
-            text-decoration: none;
-            text-transform: uppercase;
-            margin: 0 10px;
+        .container {{
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }}
         .content {{
-            padding: 20px;
             background: #fff;
-            margin-top: 20px;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
         }}
         .content h2 {{
-            text-align: center;
             color: #333;
+            margin-bottom: 10px;
         }}
         .content p {{
-            text-align: center;
+            margin: 10px 0;
             font-size: 1.2em;
         }}
         .content a {{
@@ -68,14 +63,12 @@ html_template = '''
             padding: 20px;
             background: #333;
             color: #fff;
-            margin-top: 20px;
-            border-top: #77aaff 3px solid;
         }}
     </style>
 </head>
 <body>
     <header>
-        <h1>Welcome to the Project Documentation</h1>
+        Welcome to the Project Documentation
     </header>
     <div class="container">
         <div class="content">
@@ -86,14 +79,19 @@ html_template = '''
         </div>
     </div>
     <footer>
-        <p>&copy; 2024 Project Documentation</p>
+        &copy; 2024 Project Documentation
     </footer>
 </body>
 </html>
 '''
 
 if __name__ == "__main__":
-    report_files = glob.glob('gh-pages/reports/**/report.html', recursive=True)
-    links = ''.join(f'<p><a href="{rel_path}">{rel_path}</a></p>' for report in report_files if (rel_path := os.path.relpath(report, "gh-pages")))
+    report_files = glob.glob('reports/**/report.html', recursive=True)
+    links_list = []
+    for report in report_files:
+        rel_path = os.path.relpath(report, ".")
+        links_list.append(f'<p><a href="{rel_path}">{rel_path}</a></p>')
+    links = ''.join(links_list)
+
     html_content = html_template.format(links=links)
     print(html_content)
