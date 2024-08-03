@@ -1,5 +1,6 @@
 import os
 import glob
+from datetime import datetime
 
 html_template = '''
 <!DOCTYPE html>
@@ -73,7 +74,7 @@ html_template = '''
     <div class="container">
         <div class="content">
             <h2>Latest Documentation</h2>
-            <p><a href="docs/html/index.html">Latest Documentation</a></p>
+            <p><a href="docs/html/index.html">{documentation_name}</a></p>
             <h2>Previous Reports</h2>
             {links}
         </div>
@@ -90,8 +91,9 @@ if __name__ == "__main__":
     links_list = []
     for report in report_files:
         rel_path = os.path.relpath(report, ".")
-        links_list.append(f'<p><a href="{rel_path}">{rel_path}</a></p>')
+        links_list.append(f'<p><a href="{rel_path}">{report}</a></p>')
     links = ''.join(links_list)
 
-    html_content = html_template.format(links=links)
+    html_content = html_template.format(links = links,
+                                        documentation_name = f'Generated {datetime.now()}')
     print(html_content)
