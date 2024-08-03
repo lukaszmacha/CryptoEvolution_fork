@@ -9,6 +9,7 @@ Welcome to CryptoEvolution's documentation!
    modules/data_handling
    modules/indicators
    modules/utils
+   modules/aws
 
 Indices and tables
 ==================
