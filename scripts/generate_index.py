@@ -89,9 +89,9 @@ html_template = '''
 if __name__ == "__main__":
     report_files = glob.glob('reports/**/report.html', recursive=True)
     links_list = []
-    for report in report_files:
+    for report in sorted(report_files):
         rel_path = os.path.relpath(report, ".")
-        links_list.append(f'<p><a href="{rel_path}">{report}</a></p>')
+        links_list.append(f'<p><a href="{rel_path}">{report.split('/')[-2]}</a></p>')
     links = ''.join(links_list)
 
     html_content = html_template.format(links = links,
