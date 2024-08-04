@@ -1,0 +1,27 @@
+name: Gradient wotkflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  CloneRepo:
+    resources:
+      instance-type: C5
+    outputs:
+      repo:
+        type: volume
+    uses: git-checkout@v4
+    with:
+      url: context.event.github.url
+
+  HelloWorld:
+    resources:
+      instance-type: C5
+    needs:
+      - CloneRepo
+    inputs:
+      repo: CloneRepo.outputs.repo
+    uses: script@v1
+    with:
+      script: python -c "import tensorflow as tf; hello = tf.constant('Hello, TensorFlow!'); sess = tf.Session(); print(sess.run(hello))"
+      image: tensorflow/tensorflow:1.14.0-py3
