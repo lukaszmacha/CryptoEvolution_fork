@@ -69,6 +69,7 @@ jobs:
         rm -rf src/cryptoevolutionpackage || true
         git add .
         git reset requirements.txt
+        git status
         git commit -m "[DOC] Deploy documentation from ${{ github.sha }}"
         git push origin gh-pages
       env:

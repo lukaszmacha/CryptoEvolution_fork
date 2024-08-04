@@ -31,12 +31,18 @@ class DataHandler():
             granularity (Granularity): Enum specifying resolution of collected data - e.g. each 
                 15 minutes or 1 hour or 6 hours is treated separately
 
+        Raises:
+            RuntimeError: If given traiding pair symbol is not recognized.
+
         Returns:
             (pd.DataFrame): Collected data extended with given indicators.
         """
+        
+        possible_traiding_pairs = await self.coinbase.get_possible_pairs()
+        if trading_pair not in possible_traiding_pairs.index:
+            raise RuntimeError('Traiding pair not recognized!')
 
         data = await self.coinbase.get_candles_for(trading_pair, start_date, end_date, granularity)
-        
         if self.indicators:
             indicators_data = []
             for indicator in self.indicators:

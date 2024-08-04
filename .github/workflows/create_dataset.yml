@@ -1,0 +1,72 @@
+name: Create dataset
+
+on:
+  workflow_dispatch:
+    inputs:
+      trading_pair:
+        description: 'Trading pair symbol'
+        required: true
+        default: 'BTC-USD'
+        type: choice
+        options:
+          - 'BTC-USD'
+          - 'ETH-USD'
+      start_date:
+        description: 'Start date in YYYY-MM-DD HH:MM:SS format'
+        required: true
+        default: '2024-01-01 00:00:00'
+      end_date:
+        description: 'End date in YYYY-MM-DD HH:MM:SS format'
+        required: true
+        default: '2024-02-01 00:00:00'
+      granularity:
+        description: 'Granularity'
+        required: true
+        default: '1h'
+        type: choice
+        options:
+          - '1m'
+          - '5m'
+          - '15m'
+          - '30m'
+          - '1h'
+          - '6h'
+          - '1d'
+      list_of_indicators:
+        description: 'Indicators list'
+        required: false
+        default: ''
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -e .
+
+    - name: Run dataset creation and deployment
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+        ROLE_NAME: ${{ secrets.ROLE_NAME }}
+        BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+      run: |
+        python scripts/create_dataset.py \
+          --trading_pair ${{ github.event.inputs.trading_pair }} \
+          --start_date ${{ github.event.inputs.start_date }} \
+          --end_date ${{ github.event.inputs.end_date }} \
+          --granularity ${{ github.event.inputs.granularity }} \
+          --list_of_indicators ${{ github.event.inputs.list_of_indicators }}
