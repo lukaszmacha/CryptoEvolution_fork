@@ -2,6 +2,7 @@
 
 import os
 import boto3
+import io
 
 class AWSHandler:
     """
@@ -41,7 +42,7 @@ class AWSHandler:
 
     def upload_file_to_s3(self, bucket_name: str, file_path: str, desired_name: str = "") -> None:
         """
-        Attempts to upload local file to S3 Amazon bucket.
+        Attempts to upload local file specified by path to S3 Amazon bucket.
 
         Parameters:
             bucket_name (str): String denoting bucket name.
@@ -60,8 +61,22 @@ class AWSHandler:
         except Exception as e:
             raise RuntimeError(f"Did not managed to upload file! Original error: {e}")
 
+    def upload_buffer_to_s3(self, bucket_name: str, buffer: io.StringIO, desired_name: str = "") -> None:
+        """
+        Attempts to upload buffer as file body directly to S3 Amazon bucket.
 
+        Parameters:
+            bucket_name (str): String denoting bucket name.
+            buffer (io.StringIO): Buffer containing data that should be directly
+                written to bucket.
+            desired_name (str): Desired name to be given to the file after being uploaded.
 
+        Raises:
+            RuntimeError: If approached problem during file uploading.
+        """
 
-
-        
+        try:
+            self.aws_s3_resource.put_object(Bucket = bucket_name, Key = desired_name, 
+                                            Body = buffer.getvalue())
+        except Exception as e:
+            raise RuntimeError(f"Did not managed to upload file! Original error: {e}")

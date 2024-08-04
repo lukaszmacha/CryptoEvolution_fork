@@ -32,22 +32,38 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest --cov-config=.coveragerc --cov=source --cov-report=html --html=report.html
+        pytest --cov-config=.coveragerc \
+               --cov=source \
+               --cov-report=html \
+               --html=report.html \
+               --cov-fail-under=90
       
-    - name: Copy reports
-      if: ${{ success() }}
-      run: |
-        mkdir -p temp_files
-        cp -r htmlcov temp_files/.
-        rm -r temp_files/htmlcov/.gitignore
-        cp report.html temp_files/.
-        cp assets/style.css temp_files/.
+    - name: Archive reports
+      if: always()
+      uses: actions/upload-artifact@v4.3.5
+      with:
+        name: test-reports
+        path: |
+          htmlcov
+          report.html
+          assets/style.css
 
+  deploy-reports:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
     - name: Checkout gh-pages branch
       uses: actions/checkout@v4
       with:
         ref: gh-pages
         path: gh-pages
+
+    - name: Download reports
+      uses: actions/download-artifact@v4.1.8
+      with:
+        name: test-reports
+        path: temp_files
 
     - name: Get current date
       id: get_date
@@ -55,12 +71,13 @@ jobs:
 
     - name: Paste reports to gh-pages
       run: |
+        rm -f temp_files/htmlcov/.gitignore
         mkdir -p gh-pages/reports
         mkdir -p gh-pages/reports/assets
         mkdir -p gh-pages/reports/$DATE
         cp -r temp_files/htmlcov gh-pages/reports/$DATE/.
         cp temp_files/report.html gh-pages/reports/$DATE/.
-        cp temp_files/style.css gh-pages/reports/assets/.
+        cp temp_files/assets/style.css gh-pages/reports/assets/.
         sed -i 's|<link href="assets/style.css" rel="stylesheet" type="text/css"/>|<link href="../assets/style.css" rel="stylesheet" type="text/css"/>|' gh-pages/reports/$DATE/report.html
         sed -i '/<\/html>/i\  <h2> Coverage </h2>\n  <p> Go to <a href="htmlcov\\index.html"> report </a></p>' gh-pages/reports/$DATE/report.html
 
@@ -81,6 +98,7 @@ jobs:
       run: |
         cd gh-pages
         git add .
+        git status
         git commit -m "[DOC] Deploy reports from ${{ github.sha }}"
         git push origin gh-pages
       env:

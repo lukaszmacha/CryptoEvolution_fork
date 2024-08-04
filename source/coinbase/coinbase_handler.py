@@ -24,11 +24,19 @@ class CoinBaseHandler:
             date_format (str): String representing format that certain date is written in.
             target_timezone (Any): Timezone given by any type of value compatible with datetime library.
 
+        Raises:
+            ValueError: In case of invalid date conversion.
+
         Returns:
             (int): Timestamp converted from input date.
         """
 
-        return int(datetime.strptime(date_str, date_format).replace(tzinfo=target_timezone).timestamp())
+        try:
+            result = int(datetime.strptime(date_str, date_format).replace(tzinfo=target_timezone).timestamp())
+        except:
+            raise ValueError(f'Invalid data format! Expected was {date_format}.')
+
+        return result
 
     async def __send_request_to_coinbase(self, session: aiohttp.ClientSession, url: str, pid: int) -> list:
         """
