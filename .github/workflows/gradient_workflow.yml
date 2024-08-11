@@ -32,5 +32,5 @@ jobs:
       run: |
         python scripts/run_gradient_command.py \
           --url https://github.com/${{ github.repository }}.git \
-          --command "sleep 5m && gradient notebooks delete --id `hostname` --apiKey $API_KEY" \
+          --command "echo test > test.txt && gradient notebooks delete --id `hostname` --apiKey $API_KEY" \
           --env API_KEY:$GRADIENT_API_KEY
