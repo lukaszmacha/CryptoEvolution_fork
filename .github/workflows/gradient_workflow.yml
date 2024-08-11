@@ -2,6 +2,11 @@ name: Gradient workflow
 
 on:
   workflow_dispatch:
+    inputs:
+      command:
+        description: 'Command to be run on Gradient Notebook'
+        required: true
+        default: 'echo test > test.txt && gradient notebooks delete --id `hostname` --apiKey $API_KEY'
 
 jobs:
   gradient:
@@ -32,5 +37,5 @@ jobs:
       run: |
         python scripts/run_gradient_command.py \
           --url https://github.com/${{ github.repository }}.git \
-          --command "echo test > test.txt && gradient notebooks delete --id `hostname` --apiKey $API_KEY" \
+          --command "${{ github.event.inputs.command }}" \
           --env API_KEY:$GRADIENT_API_KEY
