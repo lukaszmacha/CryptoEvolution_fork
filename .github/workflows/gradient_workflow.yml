@@ -6,7 +6,7 @@ on:
       command:
         description: 'Command to be run on Gradient Notebook'
         required: true
-        default: 'echo test > test.txt && gradient notebooks delete --id `hostname` --apiKey $API_KEY'
+        default: 'sleep 5m && gradient notebooks delete --id `hostname` --apiKey \$API_KEY'
 
 jobs:
   gradient:
