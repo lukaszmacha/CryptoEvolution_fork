@@ -2,7 +2,8 @@ name: Deploy content to pages
 
 on:
   push:
-    branches: ["gh-pages"]
+    branches:
+    - 'gh-pages'
   workflow_dispatch:
   workflow_run:
     workflows: ["Deploy documentation"]

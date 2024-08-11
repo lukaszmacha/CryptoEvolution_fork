@@ -1,27 +1,36 @@
-name: Gradient wotkflow
+name: Gradient workflow
 
 on:
   workflow_dispatch:
 
 jobs:
-  CloneRepo:
-    resources:
-      instance-type: C5
-    outputs:
-      repo:
-        type: volume
-    uses: git-checkout@v4
-    with:
-      url: context.event.github.url
+  gradient:
+    runs-on: ubuntu-latest
 
-  HelloWorld:
-    resources:
-      instance-type: C5
-    needs:
-      - CloneRepo
-    inputs:
-      repo: CloneRepo.outputs.repo
-    uses: script@v1
-    with:
-      script: python -c "import tensorflow as tf; hello = tf.constant('Hello, TensorFlow!'); sess = tf.Session(); print(sess.run(hello))"
-      image: tensorflow/tensorflow:1.14.0-py3
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -e .
+
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+    - name: Run gradient command
+      env:
+        GRADIENT_API_KEY: ${{ secrets.GRADIENT_API_KEY }}
+        GRADIENT_PROJECT_ID: ${{ secrets.GRADIENT_PROJECT_ID }}
+      run: |
+        python scripts/run_gradient_command.py \
+          --url https://github.com/${{ github.repository }}.git \
+          --command "sleep 5m && gradient notebooks delete --id `hostname` --apiKey $API_KEY" \
+          --env API_KEY:$GRADIENT_API_KEY

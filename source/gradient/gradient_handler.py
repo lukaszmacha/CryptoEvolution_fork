@@ -1,0 +1,81 @@
+# gradient/gradient_handler.py
+
+from gradient import NotebooksClient
+import os
+from datetime import datetime
+
+"""
+Deafult start command for Paperspace Gradient Notebooks. Needed to be passed in order for Notebook to be fully functional.
+"""
+DEFAULT_START_COMMAND = " & PIP_DISABLE_PIP_VERSION_CHECK=1 jupyter lab --allow-root --ip=0.0.0.0 --no-browser \
+                        --ServerApp.trust_xheaders=True --ServerApp.disable_check_xsrf=False --ServerApp.allow_remote_access=True \
+                        --ServerApp.allow_origin='*' --ServerApp.allow_credentials=True"
+
+class GradientHandler():
+    """
+    Responsible for communication and management of Paperspace Gradient services.
+    """
+
+    def __init__(self) -> None:
+        """
+        Class constructor. Before calling it GRADIENT_API_KEY and GRADIENT_PROJECT_ID 
+        should be available in as environmental variables.
+
+        Raises:
+            RuntimeError: If Paperspace Gradient api key or project ID are not defined.
+        """
+
+        GRADIENT_API_KEY = os.getenv('GRADIENT_API_KEY')
+        GRADIENT_PROJECT_ID = os.getenv('GRADIENT_PROJECT_ID')
+
+        if not GRADIENT_API_KEY or not GRADIENT_PROJECT_ID:
+            raise RuntimeError('Paperspace Gradient api key or project ID not found in environment variables!')
+
+        self.notebooks = NotebooksClient(GRADIENT_API_KEY)
+        self.project_id = GRADIENT_PROJECT_ID
+
+    def creata_notebook(self, github_repository_url: str, command_to_invoke: str,
+                        notebook_name: str = datetime.now(), machine_types: list = ['Free-P5000'], 
+                        timeout: int = 6, environment_dict: dict = dict()) -> str:
+        """
+        Attempts to create notebook basing on certain github repository, starting command and
+        sets needed environmental parameters (e.g. variables, machine type, etc.).
+
+        Parameters:
+            github_repository_url (str): URL to repository that should be downloaded to notebook.
+            command_to_invoke (str): Command to be invoked after notebook is started.
+            notebook_name (str): Name that should be given to notebook.
+            machine_types (list): List of demanded machine's types that notebook should be attempted
+                to be created on. The first successful creation stops attempts to create notebook for
+                machine types that are further in the list. Therefore, machine's types should be ordered
+                from the most wanted to the least one.
+            timeout (int): Number of hours that notebook should be active for. For free instances maximal
+                value for this parameter is 6.
+            environment_dict (dict): Dictionary containing defined environmental variables.
+
+        Raises:
+            RuntimeError: If approached problem during notebook creation.
+        """
+
+        notebook_id = None
+        error_to_be_raised = None
+        for machine_type in machine_types:
+            try:
+                notebook_id = self.notebooks.create(machine_type = machine_type,
+                                                    container = 'paperspace/gradient-base:pt112-tf29-jax0317-py39-20230125',
+                                                    project_id = self.project_id,
+                                                    shutdown_timeout = timeout,
+                                                    workspace = github_repository_url,
+                                                    command = command_to_invoke + DEFAULT_START_COMMAND,
+                                                    environment = environment_dict,
+                                                    name = notebook_name)
+            except Exception as error:
+               error_to_be_raised = error
+
+            if notebook_id is not None:
+                break
+
+        if notebook_id is None:
+            raise RuntimeError(f"Did not managed to create notebook! Original error: {error_to_be_raised}")
+
+        return notebook_id
