@@ -38,6 +38,7 @@ jobs:
         pytest --cov-config=.coveragerc \
                --cov=source \
                --cov-report=html \
+               --log-level=INFO \
                --html=report.html \
                --cov-fail-under=90
   
