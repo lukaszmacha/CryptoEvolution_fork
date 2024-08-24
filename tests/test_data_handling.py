@@ -8,12 +8,12 @@ from source.utils import Granularity
 from mock_indicator import MockIndicatorHandler
 
 MOCKED_COINBASE_HANDLER_DATA = pd.DataFrame(data={
-        'low': [8400.00, 8487.33, 8635.31],
-        'high': [8752.34, 8973.45, 8927.45],
-        'open': [8523.33, 8522.30, 8919.21],
-        'close': [8522.31, 8915.00, 8757.84],
-        'volume': [7353.139605, 10216.692545, 9152.706926]
-    }, index = pd.DatetimeIndex(['2020-03-01', '2020-03-02', '2020-03-03'], name='time'))
+    'low': [8400.00, 8487.33, 8635.31],
+    'high': [8752.34, 8973.45, 8927.45],
+    'open': [8523.33, 8522.30, 8919.21],
+    'close': [8522.31, 8915.00, 8757.84],
+    'volume': [7353.139605, 10216.692545, 9152.706926]
+}, index = pd.DatetimeIndex(['2020-03-01', '2020-03-02', '2020-03-03'], name='time'))
 
 @pytest.mark.asyncio
 @patch('source.coinbase.CoinBaseHandler.get_candles_for', new_callable=AsyncMock)
