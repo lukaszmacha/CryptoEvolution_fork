@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Gradient Module &#8212; Crypto Evolution 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Environment Module" href="environment.html" />
+    <link rel="prev" title="AWS Module" href="aws.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-source.gradient.gradient_handler">
+<span id="gradient-module"></span><h1>Gradient Module<a class="headerlink" href="#module-source.gradient.gradient_handler" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="source.gradient.gradient_handler.GradientHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GradientHandler</span></span><a class="headerlink" href="#source.gradient.gradient_handler.GradientHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Responsible for communication and management of Paperspace Gradient services.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="source.gradient.gradient_handler.GradientHandler.creata_notebook">
+<span class="sig-name descname"><span class="pre">creata_notebook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">github_repository_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command_to_invoke</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notebook_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">8,</span> <span class="pre">24,</span> <span class="pre">8,</span> <span class="pre">46,</span> <span class="pre">50,</span> <span class="pre">741379)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machine_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['Free-P5000']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#source.gradient.gradient_handler.GradientHandler.creata_notebook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to create notebook basing on certain github repository, starting command and
+sets needed environmental parameters (e.g. variables, machine type, etc.).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>github_repository_url</strong> (<em>str</em>) – URL to repository that should be downloaded to notebook.</p></li>
+<li><p><strong>command_to_invoke</strong> (<em>str</em>) – Command to be invoked after notebook is started.</p></li>
+<li><p><strong>notebook_name</strong> (<em>str</em>) – Name that should be given to notebook.</p></li>
+<li><p><strong>machine_types</strong> (<em>list</em>) – List of demanded machine’s types that notebook should be attempted
+to be created on. The first successful creation stops attempts to create notebook for
+machine types that are further in the list. Therefore, machine’s types should be ordered
+from the most wanted to the least one.</p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – Number of hours that notebook should be active for. For free instances maximal
+value for this parameter is 6.</p></li>
+<li><p><strong>environment_dict</strong> (<em>dict</em>) – Dictionary containing defined environmental variables.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If approached problem during notebook creation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Crypto Evolution</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="coinbase.html">Coinbase Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_handling.html">Data Handling Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indicators.html">Indicators Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aws.html">AWS Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Gradient Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment.html">Environment Module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="aws.html" title="previous chapter">AWS Module</a></li>
+      <li>Next: <a href="environment.html" title="next chapter">Environment Module</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Roch Fedorowicz.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 5.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../_sources/modules/gradient.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

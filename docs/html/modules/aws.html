@@ -16,6 +16,7 @@
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Gradient Module" href="gradient.html" />
     <link rel="prev" title="Utils Module" href="utils.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -42,9 +43,28 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Responsible for handling communication with Amazon AWS services.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="source.aws.aws_handler.AWSHandler.upload_buffer_to_s3">
+<span class="sig-name descname"><span class="pre">upload_buffer_to_s3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StringIO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desired_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#source.aws.aws_handler.AWSHandler.upload_buffer_to_s3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to upload buffer as file body directly to S3 Amazon bucket.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bucket_name</strong> (<em>str</em>) – String denoting bucket name.</p></li>
+<li><p><strong>buffer</strong> (<em>io.StringIO</em>) – Buffer containing data that should be directly
+written to bucket.</p></li>
+<li><p><strong>desired_name</strong> (<em>str</em>) – Desired name to be given to the file after being uploaded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If approached problem during file uploading.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="source.aws.aws_handler.AWSHandler.upload_file_to_s3">
 <span class="sig-name descname"><span class="pre">upload_file_to_s3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desired_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#source.aws.aws_handler.AWSHandler.upload_file_to_s3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attempts to upload local file to S3 Amazon bucket.</p>
+<dd><p>Attempts to upload local file specified by path to S3 Amazon bucket.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -88,6 +108,8 @@ If left unspecified, name does not change.</p></li>
 <li class="toctree-l1"><a class="reference internal" href="indicators.html">Indicators Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utils Module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">AWS Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gradient.html">Gradient Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment.html">Environment Module</a></li>
 </ul>
 
 <div class="relations">
@@ -95,6 +117,7 @@ If left unspecified, name does not change.</p></li>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
       <li>Previous: <a href="utils.html" title="previous chapter">Utils Module</a></li>
+      <li>Next: <a href="gradient.html" title="next chapter">Gradient Module</a></li>
   </ul></li>
 </ul>
 </div>

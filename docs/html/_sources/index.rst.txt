@@ -10,6 +10,8 @@ Welcome to CryptoEvolution's documentation!
    modules/indicators
    modules/utils
    modules/aws
+   modules/gradient
+   modules/environment
 
 Indices and tables
 ==================
