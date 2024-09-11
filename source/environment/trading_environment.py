@@ -112,7 +112,7 @@ class TradingEnvironment(Env):
 
         return current_marked_data_list + current_inner_state_list
 
-    def get_traiding_data(self) -> SimpleNamespace:
+    def get_trading_data(self) -> SimpleNamespace:
         """
         Trading data getter.
 
@@ -122,7 +122,7 @@ class TradingEnvironment(Env):
 
         return copy.copy(self.__trading_data)
 
-    def get_traiding_consts(self) -> SimpleNamespace:
+    def get_trading_consts(self) -> SimpleNamespace:
         """
         Trading constants getter.
 
@@ -141,6 +141,37 @@ class TradingEnvironment(Env):
         """
 
         return copy.copy(self.__broker)
+    
+    def get_environment_length(self) -> int:
+        """
+        Environment length getter.
+
+        Returns:
+            (Int): Length of environment.
+        """
+
+        return len(self.__data)
+    
+    def get_environment_spatial_data_dimension(self) -> tuple[int, int]:
+        """
+        Environment spatial data dimensionality getter.
+
+        Returns:
+            (Int): Dimension of spatial data in environment.
+        """
+
+        return (self.__trading_consts.WINDOW_SIZE, self.__data.shape[1])
+    
+    def get_data_for_iteration(self, columns, start, stop, step) -> pd.Series:
+        """
+        Data for certain iterations getter.
+
+        Returns:
+            (pd.Series): Copy of part of data with specified columns
+                over specified iterations.
+        """
+
+        return copy.copy(self.__data.loc[start:stop:step, columns])
 
     def step(self, action: int) -> tuple[pd.DataFrame, float, bool, dict]:
         """
