@@ -18,7 +18,7 @@ def str_to_dict(environment_dict_str: str) -> dict:
 
     return environment_dict
 
-def main(url: str, command: str, notebook_name: Optional[str] = None, machines: Optional[str] = None,
+def main(command: str, url: Optional[str] = None, notebook_name: Optional[str] = None, machines: Optional[str] = None,
          timeout: Optional[int] = None, environment: Optional[str] = None) -> None:
     if timeout is None:
         logging.info('No timeout set, using 6 hours as default.')
@@ -36,7 +36,7 @@ def main(url: str, command: str, notebook_name: Optional[str] = None, machines: 
 
     try:
         gradient_handler = GradientHandler()
-        notebook_id = gradient_handler.creata_notebook(url, command, notebook_name, machines,
+        notebook_id = gradient_handler.create_notebook(url, command, notebook_name, machines,
                                                        timeout, str_to_dict(environment))
         if notebook_id is not None:
             logging.info(f'Instantiated training run successfully on notebook {notebook_id}.')
@@ -50,9 +50,9 @@ if __name__ == "__main__":
                         style="{", datefmt="%Y-%m-%d %H:%M:%S")
 
     parser = argparse.ArgumentParser(description = 'Instantiate training on Paperspace Gradient machine.')
-    parser.add_argument('--url', type = str, required = True, 
-                        help = 'Url to github repository that should be copied into machine.')
     parser.add_argument('--command', type = str, required = True, help = 'Command invoked at machine.')
+    parser.add_argument('--url', type = str, required = False, 
+                        help = 'Url to github repository that should be copied into machine.')
     parser.add_argument('--name', type = str, required = False, help = 'Name of the notebook.')
     parser.add_argument('--machines', type = str, required = False,
                         help = '''List of machines, that looks like: machine_type_1,machine_type_2,...,machine_type_N.
@@ -63,4 +63,4 @@ if __name__ == "__main__":
                         help = 'String denoted dictionary of environmental variables, eg. key:value,key_2:value_2.')
 
     args = parser.parse_args()
-    main(args.url, args.command, args.name, args.machines, args.timeout, args.env)
+    main(args.command, args.url, args.name, args.machines, args.timeout, args.env)

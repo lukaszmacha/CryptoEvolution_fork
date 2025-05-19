@@ -8,7 +8,7 @@ import logging
 from types import SimpleNamespace
 
 from source.environment import TradingEnvironment, Order, Broker
-from mock_validator import MockRewardValidator
+from source.environment.mock_validator import MockRewardValidator
 
 MOCKED_CSV_DATA = pd.DataFrame(data={
     'low': [20000.0, 20500.0, 20100.0, 20100.0, 20000.0],
@@ -101,7 +101,7 @@ class TradingEnvironmentTestCase(TestCase):
         """
         
         logging.info("Starting creation test case.")
-        traiding_consts = self.env.get_traiding_consts()
+        traiding_consts = self.env.get_trading_consts()
 
         expected_state = [-1,   # normalized low[0] -> lower value from 20000.0 and 20500.0
                            0,   # normalized high[0] -> equal value from 20900.0 and 20900.0
@@ -151,7 +151,7 @@ class TradingEnvironmentTestCase(TestCase):
         """
 
         logging.info("Starting step test case.")
-        traiding_consts = self.env.get_traiding_consts()
+        traiding_consts = self.env.get_trading_consts()
 
         expected_money_to_be_spent_on_trade = 200
         expected_budget_after_buy = 800
@@ -203,7 +203,7 @@ class TradingEnvironmentTestCase(TestCase):
         """
 
         logging.info("Starting step test case.")
-        traiding_consts = self.env.get_traiding_consts()
+        traiding_consts = self.env.get_trading_consts()
         self.__update_sut(currently_placed_trades = traiding_consts.MAX_AMOUNT_OF_TRADES)
 
         expected_money_to_be_spent_on_trade = 0
@@ -240,7 +240,7 @@ class TradingEnvironmentTestCase(TestCase):
         """
 
         logging.info("Starting step test case.")
-        traiding_consts = self.env.get_traiding_consts()
+        traiding_consts = self.env.get_trading_consts()
         self.__update_sut(currently_placed_trades = traiding_consts.MAX_AMOUNT_OF_TRADES)
 
         expected_money_to_be_spent_on_trade = 0
@@ -294,7 +294,7 @@ class TradingEnvironmentTestCase(TestCase):
         """
 
         logging.info("Starting step test case.")
-        traiding_consts = self.env.get_traiding_consts()
+        traiding_consts = self.env.get_trading_consts()
         orders = [Order(200, True, 0.99, 1.01)]
         self.__update_sut(current_orders = orders,
                           currently_placed_trades = 1,
@@ -411,7 +411,7 @@ class TradingEnvironmentTestCase(TestCase):
         """
 
         logging.info("Starting step scenario test case.")
-        traiding_consts = self.env.get_traiding_consts()
+        traiding_consts = self.env.get_trading_consts()
         orders = [Order(200, True, 0.9, 1.1), Order(200, False, 0.8, 1.2)]
         self.__update_sut(leverage = 10,
                           current_orders = orders,
@@ -474,7 +474,7 @@ class TradingEnvironmentTestCase(TestCase):
         """
 
         logging.info("Starting reset test case.")
-        traiding_consts = self.env.get_traiding_consts()
+        traiding_consts = self.env.get_trading_consts()
         expected_budget = traiding_consts.INITIAL_BUDGET
         expected_invested = 0
         expected_no_trades_for = 0
@@ -485,7 +485,7 @@ class TradingEnvironmentTestCase(TestCase):
         self.env.reset()
 
         logging.info("Checking reset results.")
-        traiding_data = self.env.get_traiding_data()
+        traiding_data = self.env.get_trading_data()
         orders = self.env.get_broker().get_current_orders()
         assert traiding_data.current_budget == expected_budget
         assert traiding_data.currently_invested == expected_invested

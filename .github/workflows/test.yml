@@ -10,58 +10,58 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     outputs:
       reports_archived: ${{ steps.check_archived_reports.outputs.are_reports_archived }}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9.7'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.13'
 
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -e .
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || true
+          pip install -e .
 
-    - name: Run tests
-      run: |
-        pytest --cov-config=.coveragerc \
-               --cov=source \
-               --cov-report=html \
-               --log-level=INFO \
-               --html=report.html \
-               --cov-fail-under=90
-  
-    - name: Archive reports
-      id: archive_reports
-      if: success() || failure()
-      uses: actions/upload-artifact@v4.3.5
-      with:
-        name: test-reports
-        path: |
-          htmlcov
-          report.html
-          assets/style.css
+      - name: Run tests
+        run: |
+          pytest --cov-config=.coveragerc \
+                 --cov=source \
+                 --cov-report=html \
+                 --log-level=INFO \
+                 --html=report.html \
+                 --cov-fail-under=90
 
-    - name: Check if reports are archived properly
-      if: always()
-      id: check_archived_reports
-      run: |
-        if [[ "${{ steps.archive_reports.outcome }}" == "success" ]]; then \
-          echo "are_reports_archived=true" >> $GITHUB_OUTPUT; \
-        else \
-          echo "are_reports_archived=false" >> $GITHUB_OUTPUT; \
-        fi
+      - name: Archive reports
+        id: archive_reports
+        if: success() || failure()
+        uses: actions/upload-artifact@v4.3.5
+        with:
+          name: test-reports
+          path: |
+            htmlcov
+            report.html
+            assets/style.css
+
+      - name: Check if reports are archived properly
+        if: always()
+        id: check_archived_reports
+        run: |
+          if [[ "${{ steps.archive_reports.outcome }}" == "success" ]]; then \
+            echo "are_reports_archived=true" >> $GITHUB_OUTPUT; \
+          else \
+            echo "are_reports_archived=false" >> $GITHUB_OUTPUT; \
+          fi
 
   deploy-reports:
     runs-on: ubuntu-latest
@@ -69,59 +69,59 @@ jobs:
     if: always()
 
     steps:
-    - name: Check if reports are archived properly
-      run: |
-        if [[ "${{ needs.test.outputs.reports_archived }}" != "true" ]]; then \
-          exit 1; \
-        fi
+      - name: Check if reports are archived properly
+        run: |
+          if [[ "${{ needs.test.outputs.reports_archived }}" != "true" ]]; then \
+            exit 1; \
+          fi
 
-    - name: Checkout gh-pages branch
-      uses: actions/checkout@v4
-      with:
-        ref: gh-pages
-        path: gh-pages
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
 
-    - name: Download reports
-      uses: actions/download-artifact@v4.1.8
-      with:
-        name: test-reports
-        path: temp_files
+      - name: Download reports
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: test-reports
+          path: temp_files
 
-    - name: Get current date
-      id: get_date
-      run: echo "DATE=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
+      - name: Get current date
+        id: get_date
+        run: echo "DATE=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
 
-    - name: Paste reports to gh-pages
-      run: |
-        rm -f temp_files/htmlcov/.gitignore
-        mkdir -p gh-pages/reports
-        mkdir -p gh-pages/reports/assets
-        mkdir -p gh-pages/reports/$DATE
-        cp -r temp_files/htmlcov gh-pages/reports/$DATE/.
-        cp temp_files/report.html gh-pages/reports/$DATE/.
-        cp temp_files/assets/style.css gh-pages/reports/assets/.
-        sed -i 's|<link href="assets/style.css" rel="stylesheet" type="text/css"/>|<link href="../assets/style.css" rel="stylesheet" type="text/css"/>|' gh-pages/reports/$DATE/report.html
-        sed -i '/<\/html>/i\  <h2> Coverage </h2>\n  <p> Go to <a href="htmlcov\\index.html"> report </a></p>' gh-pages/reports/$DATE/report.html
+      - name: Paste reports to gh-pages
+        run: |
+          rm -f temp_files/htmlcov/.gitignore
+          mkdir -p gh-pages/reports
+          mkdir -p gh-pages/reports/assets
+          mkdir -p gh-pages/reports/$DATE
+          cp -r temp_files/htmlcov gh-pages/reports/$DATE/.
+          cp temp_files/report.html gh-pages/reports/$DATE/.
+          cp temp_files/assets/style.css gh-pages/reports/assets/.
+          sed -i 's|<link href="assets/style.css" rel="stylesheet" type="text/css"/>|<link href="../assets/style.css" rel="stylesheet" type="text/css"/>|' gh-pages/reports/$DATE/report.html
+          sed -i '/<\/html>/i\  <h2> Coverage </h2>\n  <p> Go to <a href="htmlcov\\index.html"> report </a></p>' gh-pages/reports/$DATE/report.html
 
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=gh-pages" >> $GITHUB_ENV
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=gh-pages" >> $GITHUB_ENV
 
-    - name: Create index.html with links to all reports
-      run: |
-        cd gh-pages
-        python scripts/generate_index.py | tee index.html
+      - name: Create index.html with links to all reports
+        run: |
+          cd gh-pages
+          python scripts/generate_index.py | tee index.html
 
-    - name: Configure Git
-      run: |
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
+      - name: Configure Git
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
 
-    - name: Push changes
-      run: |
-        cd gh-pages
-        git add .
-        git status
-        git commit -m "[DOC] Deploy reports from ${{ github.sha }}"
-        git push origin gh-pages
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push changes
+        run: |
+          cd gh-pages
+          git add .
+          git status
+          git commit -m "[DOC] Deploy reports from ${{ github.sha }}"
+          git push origin gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

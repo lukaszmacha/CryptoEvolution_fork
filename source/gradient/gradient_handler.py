@@ -11,6 +11,11 @@ DEFAULT_START_COMMAND = " & PIP_DISABLE_PIP_VERSION_CHECK=1 jupyter lab --allow-
                         --ServerApp.trust_xheaders=True --ServerApp.disable_check_xsrf=False --ServerApp.allow_remote_access=True \
                         --ServerApp.allow_origin='*' --ServerApp.allow_credentials=True"
 
+"""
+Default container type for Paperspace Gradient Notebooks. It is a base container with preinstalled Tensorflow, JAX and Python 3.9.
+"""
+DEFAUL_CONTAINER_TYPE = 'paperspace/gradient-base:pt112-tf29-jax0317-py39-20230125'
+
 class GradientHandler():
     """
     Responsible for communication and management of Paperspace Gradient services.
@@ -18,7 +23,7 @@ class GradientHandler():
 
     def __init__(self) -> None:
         """
-        Class constructor. Before calling it GRADIENT_API_KEY and GRADIENT_PROJECT_ID 
+        Class constructor. Before calling it GRADIENT_API_KEY and GRADIENT_PROJECT_ID
         should be available in as environmental variables.
 
         Raises:
@@ -34,16 +39,16 @@ class GradientHandler():
         self.notebooks = NotebooksClient(GRADIENT_API_KEY)
         self.project_id = GRADIENT_PROJECT_ID
 
-    def creata_notebook(self, github_repository_url: str, command_to_invoke: str,
-                        notebook_name: str = datetime.now(), machine_types: list = ['Free-P5000'], 
+    def create_notebook(self, command_to_invoke: str, github_repository_url: str = None,
+                        notebook_name: str = datetime.now(), machine_types: list = ['Free-P5000'],
                         timeout: int = 6, environment_dict: dict = dict()) -> str:
         """
         Attempts to create notebook basing on certain github repository, starting command and
         sets needed environmental parameters (e.g. variables, machine type, etc.).
 
         Parameters:
-            github_repository_url (str): URL to repository that should be downloaded to notebook.
             command_to_invoke (str): Command to be invoked after notebook is started.
+            github_repository_url (str): URL to repository that should be downloaded to notebook.
             notebook_name (str): Name that should be given to notebook.
             machine_types (list): List of demanded machine's types that notebook should be attempted
                 to be created on. The first successful creation stops attempts to create notebook for
@@ -62,7 +67,7 @@ class GradientHandler():
         for machine_type in machine_types:
             try:
                 notebook_id = self.notebooks.create(machine_type = machine_type,
-                                                    container = 'paperspace/gradient-base:pt112-tf29-jax0317-py39-20230125',
+                                                    container = DEFAUL_CONTAINER_TYPE,
                                                     project_id = self.project_id,
                                                     shutdown_timeout = timeout,
                                                     workspace = github_repository_url,
@@ -79,3 +84,22 @@ class GradientHandler():
             raise RuntimeError(f"Did not managed to create notebook! Original error: {error_to_be_raised}")
 
         return notebook_id
+
+    def delete_notebook(self, notebook_id: str) -> None:
+        """
+        Deletes notebook with the given ID from Paperspace Gradient.
+
+        This method attempts to remove a previously created notebook from
+        the Paperspace Gradient platform.
+
+        Parameters:
+            notebook_id (str): ID of the notebook to be deleted.
+
+        Raises:
+            RuntimeError: If approached problem during notebook deletion.
+        """
+
+        try:
+            self.notebooks.delete(notebook_id)
+        except Exception as error:
+            raise RuntimeError(f"Did not managed to delete notebook! Original error: {error}")

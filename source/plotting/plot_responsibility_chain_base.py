@@ -1,0 +1,90 @@
+# plotting/plot_responsibility_chain_base.py
+
+import matplotlib.pyplot as plt
+from typing import Optional
+
+class PlotResponsibilityChainBase():
+    """
+    Base class for implementing the responsibility chain pattern for plotting.
+
+    This class provides a framework for creating a chain of plotting handlers where
+    each handler can decide whether it can handle a specific plot request. If a handler
+    cannot process the request, it passes the request to the next handler in the chain.
+    All plotting chain implementations should inherit from this class and implement
+    the _can_plot and _plot methods.
+    """
+
+    __next_chain_link: 'PlotResponsibilityChainBase' = None
+
+    def plot(self, data) -> Optional[plt.Axes]:
+        """
+        Attempts to plot data by finding an appropriate handler in the chain.
+
+        Parameters:
+            data (dict): Dictionary containing 'key' identifying the plot type
+                        and 'plot_data' containing the actual data to be plotted.
+
+        Returns:
+            Optional[plt.Axes]: The matplotlib Axes object if plotting was successful,
+                               None if no handler in the chain could process the request.
+        """
+
+        key = data['key']
+        plot_data = data['plot_data']
+
+        if (self._can_plot(key)):
+            return self._plot(plot_data)
+        else:
+            if self.__next_chain_link is not None:
+                return self.__next_chain_link.plot(data)
+            else:
+                return None
+
+    def add_next_chain_link(self, next_chain_link: 'PlotResponsibilityChainBase'):
+        """
+        Adds the next handler to the responsibility chain.
+
+        Parameters:
+            next_chain_link (PlotResponsibilityChainBase): The next handler to process
+                                                          requests if this handler cannot.
+        """
+
+        self.__next_chain_link = next_chain_link
+
+    def _can_plot(self, key: str) -> bool:
+        """
+        Determines if this handler can plot the given plot type.
+
+        This is an abstract method that should be implemented by all subclasses.
+
+        Parameters:
+            key (str): String identifier of the plot type.
+
+        Returns:
+            bool: True if this handler can process the plot request, False otherwise.
+
+        Raises:
+            NotImplementedError: If the method is not implemented by a subclass.
+        """
+
+        raise NotImplementedError("Subclasses must implement this method")
+
+    def _plot(self, plot_data: dict) -> plt.Axes:
+        """
+        Generates the actual plot from the provided data.
+
+        This is an abstract method that should be implemented by all subclasses.
+        The implementation should create and return a matplotlib plot based on
+        the provided data.
+
+        Parameters:
+            plot_data (dict): Dictionary containing the data needed for plotting.
+
+        Returns:
+            plt.Axes: Matplotlib Axes object containing the generated plot.
+
+        Raises:
+            NotImplementedError: If the method is not implemented by a subclass.
+        """
+
+        raise NotImplementedError("Subclasses must implement this method")

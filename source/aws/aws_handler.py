@@ -11,13 +11,13 @@ class AWSHandler:
 
     def __init__(self, role_name: str, region_name: str = "eu-central-1") -> None:
         """
-        Class constructor. Before calling it AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY 
-        and ACCOUNT_ID should be available in as environmental variables.
+        Class constructor. Before calling it AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+        and ACCOUNT_ID should be available as environmental variables.
 
         Parameters:
             role_arn (str): Assumed role identification string.
             region_name (str): Region name to connect to.
-        
+
         Raises:
             RuntimeError: If AWS credentials or account ID are not defined.
         """
@@ -32,7 +32,7 @@ class AWSHandler:
                                 aws_secret_access_key = AWS_SECRET_ACCESS_KEY)
         role_arn = f'arn:aws:iam::{ACCOUNT_ID}:role/{role_name}'
 
-        assumed_role = session.client('sts').assume_role(RoleArn = role_arn, 
+        assumed_role = session.client('sts').assume_role(RoleArn = role_arn,
                                                          RoleSessionName = 'S3_bucket_user_session')
         credentials = assumed_role['Credentials']
         self.aws_s3_resource = boto3.client('s3', aws_access_key_id = credentials['AccessKeyId'],
@@ -49,7 +49,7 @@ class AWSHandler:
             file_path (str): String representing file to the path that should be uploaded.
             desired_name (str): Desired name to be given to the file after being uploaded.
                 If left unspecified, name does not change.
-        
+
         Raises:
             RuntimeError: If approached problem during file uploading.
         """
@@ -76,7 +76,29 @@ class AWSHandler:
         """
 
         try:
-            self.aws_s3_resource.put_object(Bucket = bucket_name, Key = desired_name, 
+            self.aws_s3_resource.put_object(Bucket = bucket_name, Key = desired_name,
                                             Body = buffer.getvalue())
         except Exception as e:
             raise RuntimeError(f"Did not managed to upload file! Original error: {e}")
+
+    def download_file_from_s3(self, bucket_name: str, file_name: str, desired_path: str = "") -> None:
+        """
+        Downloads a file from an S3 bucket to a local path.
+
+        Parameters:
+            bucket_name (str): The name of the S3 bucket.
+            file_name (str): The key/path of the file in the S3 bucket.
+            desired_path (str, optional): The local path where the file will be saved.
+                If not provided, the file will be downloaded to the current working directory
+                with the original filename.
+
+        Raises:
+            RuntimeError: If the download operation fails.
+        """
+
+        if desired_path == "":
+            desired_path = os.getcwd() + '/' + file_name.split('/')[-1]
+        try:
+            self.aws_s3_resource.download_file(bucket_name, file_name, desired_path)
+        except Exception as e:
+            raise RuntimeError(f"Did not managed to download file! Original error: {e}")
