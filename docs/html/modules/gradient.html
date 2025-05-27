@@ -35,41 +35,8 @@
 
           <div class="body" role="main">
             
-  <section id="module-source.gradient.gradient_handler">
-<span id="gradient-module"></span><h1>Gradient Module<a class="headerlink" href="#module-source.gradient.gradient_handler" title="Permalink to this heading">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="source.gradient.gradient_handler.GradientHandler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GradientHandler</span></span><a class="headerlink" href="#source.gradient.gradient_handler.GradientHandler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Responsible for communication and management of Paperspace Gradient services.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="source.gradient.gradient_handler.GradientHandler.creata_notebook">
-<span class="sig-name descname"><span class="pre">creata_notebook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">github_repository_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command_to_invoke</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notebook_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">8,</span> <span class="pre">24,</span> <span class="pre">9,</span> <span class="pre">0,</span> <span class="pre">28,</span> <span class="pre">794004)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machine_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['Free-P5000']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#source.gradient.gradient_handler.GradientHandler.creata_notebook" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attempts to create notebook basing on certain github repository, starting command and
-sets needed environmental parameters (e.g. variables, machine type, etc.).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>github_repository_url</strong> (<em>str</em>) – URL to repository that should be downloaded to notebook.</p></li>
-<li><p><strong>command_to_invoke</strong> (<em>str</em>) – Command to be invoked after notebook is started.</p></li>
-<li><p><strong>notebook_name</strong> (<em>str</em>) – Name that should be given to notebook.</p></li>
-<li><p><strong>machine_types</strong> (<em>list</em>) – List of demanded machine’s types that notebook should be attempted
-to be created on. The first successful creation stops attempts to create notebook for
-machine types that are further in the list. Therefore, machine’s types should be ordered
-from the most wanted to the least one.</p></li>
-<li><p><strong>timeout</strong> (<em>int</em>) – Number of hours that notebook should be active for. For free instances maximal
-value for this parameter is 6.</p></li>
-<li><p><strong>environment_dict</strong> (<em>dict</em>) – Dictionary containing defined environmental variables.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – If approached problem during notebook creation.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="gradient-module">
+<h1>Gradient Module<a class="headerlink" href="#gradient-module" title="Permalink to this heading">¶</a></h1>
 </section>
 
 
