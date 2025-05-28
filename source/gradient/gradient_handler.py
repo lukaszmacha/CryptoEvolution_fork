@@ -67,7 +67,7 @@ class GradientHandler():
         for machine_type in machine_types:
             try:
                 notebook_id = self.notebooks.create(machine_type = machine_type,
-                                                    container = DEFAUL_CONTAINER_TYPE,
+                                                    container = DEFAULT_CONTAINER_TYPE,
                                                     project_id = self.project_id,
                                                     shutdown_timeout = timeout,
                                                     workspace = github_repository_url,
