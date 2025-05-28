@@ -36,7 +36,7 @@ def main(command: str, url: Optional[str] = None, notebook_name: Optional[str] =
 
     try:
         gradient_handler = GradientHandler()
-        notebook_id = gradient_handler.create_notebook(url, command, notebook_name, machines,
+        notebook_id = gradient_handler.create_notebook(command, url, notebook_name, machines,
                                                        timeout, str_to_dict(environment))
         if notebook_id is not None:
             logging.info(f'Instantiated training run successfully on notebook {notebook_id}.')
