@@ -57,7 +57,7 @@ class InceptionBlock:
         self.__conv_2d_2_nr_of_filters: int = filters[1]
         self.__conv_2d_3_nr_of_filters: int = filters[2]
         self.__conv_2d_4_nr_of_filters: int = filters[3]
-        self.__max_pooling_2d_step: int = steps
+        self.__max_pooling_2d_step: tuple[int, int] = steps
 
     def __call__(self, input_tensor: tf.Tensor) -> tf.Tensor:
         """

@@ -14,7 +14,7 @@ DEFAULT_START_COMMAND = " & PIP_DISABLE_PIP_VERSION_CHECK=1 jupyter lab --allow-
 """
 Default container type for Paperspace Gradient Notebooks. It is a base container with preinstalled Tensorflow, JAX and Python 3.9.
 """
-DEFAUL_CONTAINER_TYPE = 'paperspace/gradient-base:pt112-tf29-jax0317-py39-20230125'
+DEFAULT_CONTAINER_TYPE = 'paperspace/gradient-base:pt112-tf29-jax0317-py39-20230125'
 
 class GradientHandler():
     """
