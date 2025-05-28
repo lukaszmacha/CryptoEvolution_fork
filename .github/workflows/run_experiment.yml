@@ -41,7 +41,7 @@ jobs:
           ROLE_NAME: ${{ secrets.ROLE_NAME }}
         run: |
           python scripts/run_gradient_command.py \
-            --command "pip freeze | egrep -v 'jdcal' | xargs pip uninstall -y \
+            --command "(pip freeze | egrep -v 'jdcal' | xargs pip uninstall -y \
                        && python -m venv venv \
                        && source venv/bin/activate \
                        && git clone https://github.com/${{ github.repository }}.git \
@@ -50,7 +50,7 @@ jobs:
                        && pip install -e . \
                        && python scripts/train_model.py \
                           --config \"s3://$BUCKET_NAME/configs/${{ github.event.inputs.config_name }}\" \
-                          --gradient" \
+                          --gradient)" \
             --env "API_KEY:$GRADIENT_API_KEY,\
                   ACCOUNT_ID:$ACCOUNT_ID,\
                   AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_ID,\
