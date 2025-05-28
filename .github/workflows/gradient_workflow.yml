@@ -13,29 +13,29 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9.13'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.13'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -e .
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
 
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
-    - name: Run gradient command
-      env:
-        GRADIENT_API_KEY: ${{ secrets.GRADIENT_API_KEY }}
-        GRADIENT_PROJECT_ID: ${{ secrets.GRADIENT_PROJECT_ID }}
-      run: |
-        python scripts/run_gradient_command.py \
-          --url https://github.com/${{ github.repository }}.git \
-          --command "${{ github.event.inputs.command }}" \
-          --env API_KEY:$GRADIENT_API_KEY
+      - name: Run gradient command
+        env:
+          GRADIENT_API_KEY: ${{ secrets.GRADIENT_API_KEY }}
+          GRADIENT_PROJECT_ID: ${{ secrets.GRADIENT_PROJECT_ID }}
+        run: |
+          python scripts/run_gradient_command.py \
+            --url https://github.com/${{ github.repository }}.git \
+            --command "${{ github.event.inputs.command }}" \
+            --env API_KEY:$GRADIENT_API_KEY

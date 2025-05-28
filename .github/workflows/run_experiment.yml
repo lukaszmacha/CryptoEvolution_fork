@@ -1,0 +1,59 @@
+name: Run experiment
+
+on:
+  workflow_dispatch:
+    inputs:
+      config_name:
+        description: 'Config name uploaded to AWS to be used for experiment'
+        required: true
+        default: 'default_config.json'
+
+jobs:
+  gradient:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.13'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
+
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+      - name: Run gradient command
+        env:
+          GRADIENT_API_KEY: ${{ secrets.GRADIENT_API_KEY }}
+          GRADIENT_PROJECT_ID: ${{ secrets.GRADIENT_PROJECT_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          ROLE_NAME: ${{ secrets.ROLE_NAME }}
+        run: |
+          python scripts/run_gradient_command.py \
+            --command "pip freeze | egrep -v 'jdcal' | xargs pip uninstall -y \
+                       && python -m venv venv \
+                       && source venv/bin/activate \
+                       && git clone https://github.com/${{ github.repository }}.git \
+                       && cd ${{ github.repository }} \
+                       && pip install -r requirements.txt \
+                       && pip install -e . \
+                       && python scripts/train_model.py \
+                          --config \"s3://$BUCKET_NAME/configs/${{ github.event.inputs.config_name }}\" \
+                          --gradient" \
+            --env API_KEY:$GRADIENT_API_KEY,\
+                  ACCOUNT_ID:$ACCOUNT_ID,\
+                  AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_ID,\
+                  AWS_SECRET_ACCESS_KEY:$AWS_SECRET_ACCESS_KEY,\
+                  ROLE_NAME:$ROLE_NAME,\
+                  BUCKET_NAME:$BUCKET_NAME
