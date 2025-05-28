@@ -18,7 +18,7 @@ class TradingEnvironment(Env):
     """
     Implements stock market environment that actor can perform actions (place orders) in.
     It is used to train Neural Network models with reinforcement learning approach. Can be
-    configure to award points and impose a penalty in a several way. 
+    configure to award points and impose a penalty in a several way.
     """
 
     def __init__(self, data_path: str, initial_budget: float, max_amount_of_trades: int, window_size: int,
@@ -26,33 +26,33 @@ class TradingEnvironment(Env):
                  buy_stop_loss: float, buy_take_profit: float, penalty_starts: int = 0, penalty_stops: int = 10,
                  static_reward_adjustment: float = 1) -> None:
         """
-        Class constructor. Allows to define all crucial constans, reward validation methods, 
+        Class constructor. Allows to define all crucial constans, reward validation methods,
         environmental penalty policies, etc.
 
         Parameters:
             data_path (str): Path to CSV data that should be used as enivronmental stock market.
             initial_budget (float): Initial budget constant for trader to start from.
-            max_amount_of_trades (int): Max amount of trades that can be ongoing at the same time. 
+            max_amount_of_trades (int): Max amount of trades that can be ongoing at the same time.
                 Seting this constant prevents traders from placing orders randomly and defines
                 amount of money that can be assigned to a single order at certain iteration.
             window_size (int): Constant defining how far in the past trader will be able to look
                 into at certain iteration.
             validator (RewardValidatorBase): Validator implementing policy used to award points
                 for closed trades.
-            sell_stop_loss (float): Constant used to define losing boundary at which sell order 
+            sell_stop_loss (float): Constant used to define losing boundary at which sell order
                 (short) is closed.
             sell_take_profit (float): Constant used to define winning boundary at which sell order
                 (short) is closed.
-            buy_stop_loss (float): Constant used to define losing boundary at which buy order 
+            buy_stop_loss (float): Constant used to define losing boundary at which buy order
                 (long) is closed.
-            buy_take_profit (float): Constant used to define winning boundary at which buy order 
+            buy_take_profit (float): Constant used to define winning boundary at which buy order
                 (long) is closed.
-            penalty_starts (int): Constant defining how many days can trader go without placing
+            penalty_starts (int): Constant defining how many trading periods can trader go without placing
                 an order until penalty is imposed. Penalty at range between start and stop constant
                 is calculated as percentile of positive reward, and subtracted from the actual reward.
-            penalty_stops (int): Constant defining at which day penalty will no longer be increased.
-                Reward for days exceeding penalty stops constant will equal minus static reward adjustment.
-            static_reward_adjustment (float): Constant use to penalize trader for bad choices or 
+            penalty_stops (int): Constant defining at which trading period penalty will no longer be increased.
+                Reward for trading periods exceeding penalty stop constant will equal minus static reward adjustment.
+            static_reward_adjustment (float): Constant use to penalize trader for bad choices or
                 reward it for good one.
         """
 
@@ -82,7 +82,7 @@ class TradingEnvironment(Env):
             min(1, 1 - math.tanh(-3.0 * (x - penalty_stops) / (penalty_stops - penalty_starts)))
 
         self.current_iteration: int = self.__trading_consts.WINDOW_SIZE
-        self.state: pd.DataFrame = self.__prepare_state_data()
+        self.state: list[float] = self.__prepare_state_data()
         self.action_space: Discrete = Discrete(3)
         self.observation_space: Box = Box(low = np.ones(len(self.state)) * -3,
                                           high = np.ones(len(self.state)) * 3,
@@ -95,12 +95,12 @@ class TradingEnvironment(Env):
         giving an insight into current budget and orders situation.
 
         Returns:
-           (list[float]): List with current observations for environment. 
+           (list[float]): List with current observations for environment.
         """
 
         current_market_data = self.__data.iloc[self.current_iteration - self.__trading_consts.WINDOW_SIZE : self.current_iteration]
         current_market_data_no_index = current_market_data.select_dtypes(include = [np.number])
-        normalized_current_market_data_values = pd.DataFrame(StandardScaler().fit_transform(current_market_data_no_index), 
+        normalized_current_market_data_values = pd.DataFrame(StandardScaler().fit_transform(current_market_data_no_index),
                                                              columns = current_market_data_no_index.columns).values
         current_marked_data_list = normalized_current_market_data_values.ravel().tolist()
 
@@ -112,7 +112,7 @@ class TradingEnvironment(Env):
 
         return current_marked_data_list + current_inner_state_list
 
-    def get_traiding_data(self) -> SimpleNamespace:
+    def get_trading_data(self) -> SimpleNamespace:
         """
         Trading data getter.
 
@@ -122,7 +122,7 @@ class TradingEnvironment(Env):
 
         return copy.copy(self.__trading_data)
 
-    def get_traiding_consts(self) -> SimpleNamespace:
+    def get_trading_consts(self) -> SimpleNamespace:
         """
         Trading constants getter.
 
@@ -131,7 +131,7 @@ class TradingEnvironment(Env):
         """
 
         return copy.copy(self.__trading_consts)
-    
+
     def get_broker(self) -> Broker:
         """
         Broker getter.
@@ -142,10 +142,41 @@ class TradingEnvironment(Env):
 
         return copy.copy(self.__broker)
 
-    def step(self, action: int) -> tuple[pd.DataFrame, float, bool, dict]:
+    def get_environment_length(self) -> int:
+        """
+        Environment length getter.
+
+        Returns:
+            (Int): Length of environment.
+        """
+
+        return len(self.__data)
+
+    def get_environment_spatial_data_dimension(self) -> tuple[int, int]:
+        """
+        Environment spatial data dimensionality getter.
+
+        Returns:
+            (Int): Dimension of spatial data in environment.
+        """
+
+        return (self.__trading_consts.WINDOW_SIZE, self.__data.shape[1] - 1)
+
+    def get_data_for_iteration(self, columns: list[str], start: int, stop: int, step: int = 1) -> list[float]:
+        """
+        Data for certain iterations getter.
+
+        Returns:
+            (list[float]): Copy of part of data with specified columns
+                over specified iterations.
+        """
+
+        return copy.copy(self.__data.loc[start:stop:step, columns].values.ravel().tolist())
+
+    def step(self, action: int) -> tuple[list[float], float, bool, dict]:
         """
         Performs specified action on environment. It results in generation of the new
-        observations. This function causes trades to handled, reward to be calculated and
+        observations. This function causes trades to be handled, reward to be calculated and
         environment to be updated.
 
         Parameters:
@@ -153,7 +184,7 @@ class TradingEnvironment(Env):
                 1 for wait action and 2 for sell action.
 
         Returns:
-            (tuple[pd.DataFrame, float, bool, dict]): Tuple containing next observation
+            (tuple[list[float], float, bool, dict]): Tuple containing next observation
                 state, reward, finish indication and additional info dictionary.
         """
 
@@ -232,7 +263,7 @@ class TradingEnvironment(Env):
         # Visualization to be implemented
         pass
 
-    def reset(self, randkey: Optional[int] = None) -> pd.DataFrame:
+    def reset(self, randkey: Optional[int] = None) -> list[float]:
         """
         Resets environment. Used typically if environemnt is finished,
         i.e. when ther is no more steps to be taken within environemnt
@@ -241,9 +272,9 @@ class TradingEnvironment(Env):
         Parameters:
             randkey (Optional[int]): Value indicating what iteration
                 should be trated as starting point after reset.
-        
+
         Returns:
-            (pd.DataFrame): Current iteration observation state. 
+            (list[float]): Current iteration observation state.
         """
 
         if randkey is None:

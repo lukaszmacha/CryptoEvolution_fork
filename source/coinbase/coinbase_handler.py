@@ -9,6 +9,7 @@ import pandas as pd
 from ..utils import Granularity
 
 MAX_NUMBER_OF_CANDLES_PER_REQUEST = 300
+PRODUCTS_URL = 'https://api.exchange.coinbase.com/products'
 
 class CoinBaseHandler:
     """
@@ -99,7 +100,7 @@ class CoinBaseHandler:
             for i in range(requests_needed):
                 start_period = start_timestamp + i * MAX_NUMBER_OF_CANDLES_PER_REQUEST * granularity_seconds
                 end_period = min(start_period + MAX_NUMBER_OF_CANDLES_PER_REQUEST * granularity_seconds, end_timestamp)
-                url = f'https://api.pro.coinbase.com/products/{trading_pair}/candles?start={start_period}&end={end_period}&granularity={granularity_seconds}'
+                url = f'{PRODUCTS_URL}/{trading_pair}/candles?start={start_period}&end={end_period}&granularity={granularity_seconds}'
                 tasks.append(self.__send_request_to_coinbase(session, url, i))
 
             responses = await asyncio.gather(*tasks)
@@ -119,8 +120,7 @@ class CoinBaseHandler:
         """
 
         async with aiohttp.ClientSession() as session:
-            url = f'https://api.pro.coinbase.com/products/'
-            response = await asyncio.gather(self.__send_request_to_coinbase(session, url, 0))
+            response = await asyncio.gather(self.__send_request_to_coinbase(session, PRODUCTS_URL, 0))
             data = [[product['id'], product['base_currency'], product['quote_currency']] for product in response[0]]
             df = pd.DataFrame(sorted(data), columns=['id', 'base_currency', 'quote_currency'])
             df.set_index('id', inplace=True)

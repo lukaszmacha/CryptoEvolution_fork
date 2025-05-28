@@ -11,14 +11,14 @@ import os
 })
 def test_created_notebook__with_2_machine_types_1_fail_1_success(mock_notebooks_client_create):
     """
-    Tests the creata_notebook method of GradientHandler.
+    Tests the create_notebook method of GradientHandler.
 
-    Verifies that the creata_notebook method successfully creates a notebook using 
+    Verifies that the create_notebook method successfully creates a notebook using 
     the Paperspace Gradient API. The NotebooksClient's create method is mocked to simulate the creation 
     process without making actual API calls.
 
     Asserts:
-        - The notebook ID returned by creata_notebook matches the mocked notebook ID.
+        - The notebook ID returned by create_notebook matches the mocked notebook ID.
         - The NotebooksClient's create method was called once with the correct parameters.
     """
 
@@ -36,7 +36,7 @@ def test_created_notebook__with_2_machine_types_1_fail_1_success(mock_notebooks_
     expected_environment = dict()
 
     gradient_handler = GradientHandler()
-    notebook_id = gradient_handler.creata_notebook(github_repository_url = expected_workspace, 
+    notebook_id = gradient_handler.create_notebook(github_repository_url = expected_workspace, 
                                                    command_to_invoke = expected_command,
                                                    machine_types = expected_machine_types)
     
