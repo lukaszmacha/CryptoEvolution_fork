@@ -41,7 +41,7 @@ jobs:
           ROLE_NAME: ${{ secrets.ROLE_NAME }}
         run: |
           python scripts/run_gradient_command.py \
-            --command "(pip freeze | egrep -v 'jdcal' | xargs pip uninstall -y \
+            --command "sleep 5m && (pip freeze | egrep -v 'jdcal' | xargs pip uninstall -y \
                        && python -m venv venv \
                        && source venv/bin/activate \
                        && git clone https://github.com/${{ github.repository }}.git \
