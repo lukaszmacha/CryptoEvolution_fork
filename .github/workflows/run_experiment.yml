@@ -42,4 +42,4 @@ jobs:
         run: |
           python scripts/run_gradient_command.py \ 
             --command "bash -c \"sleep 2m && (pip freeze | egrep -v 'jdcal' | xargs pip uninstall -y && python -m venv venv && source venv/bin/activate && git clone https://github.com/rochfedorowicz/CryptoEvolution.git && cd CryptoEvolution && pip install -r requirements.txt && pip install -e .) && sleep 5m && gradient notebooks delete --id \`hostname\` --apiKey \$API_KEY\"" \
-            --env API_KEY:$GRADIENT_API_KEY,ACCOUNT_ID:$ACCOUNT_ID,AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY:$AWS_SECRET_ACCESS_KEY,ROLE_NAME:$ROLE_NAME,BUCKET_NAME:$BUCKET_NAME"
+            --env API_KEY:$GRADIENT_API_KEY,ACCOUNT_ID:$ACCOUNT_ID,AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY:$AWS_SECRET_ACCESS_KEY,ROLE_NAME:$ROLE_NAME,BUCKET_NAME:$BUCKET_NAME
