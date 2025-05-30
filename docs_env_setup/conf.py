@@ -5,13 +5,13 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../source'))
+sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'Crypto Evolution'
-copyright = '2024, Roch Fedorowicz'
+copyright = '2024-2025, Roch Fedorowicz'
 author = 'Roch Fedorowicz'
 release = '0.1'
 
