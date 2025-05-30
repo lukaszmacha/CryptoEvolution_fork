@@ -21,7 +21,7 @@ MOCKED_CSV_DATA = pd.DataFrame(data={
 
 class TradingEnvironmentTestCase(TestCase):
     """
-    Test case TradingEnvironment class. Stores all the test cases 
+    Test case TradingEnvironment class. Stores all the test cases
     and allows for convenient test case execution.
     """
 
@@ -49,13 +49,14 @@ class TradingEnvironmentTestCase(TestCase):
         sell_take_profit = 1.05
         buy_stop_loss = sell_stop_loss
         buy_take_profit = sell_take_profit
+        test_ratio = 0.0
         penalty_starts = 2
         penalty_stops = 4
         static_reward_adjustment = 1
         self.env = TradingEnvironment(data_path, initial_budget, max_amount_of_trades, window_size, validator,
-                                      sell_stop_loss, sell_take_profit, buy_stop_loss, buy_take_profit, penalty_starts,
-                                      penalty_stops, static_reward_adjustment)
-    
+                                      sell_stop_loss, sell_take_profit, buy_stop_loss, buy_take_profit, test_ratio,
+                                      penalty_starts, penalty_stops, static_reward_adjustment)
+
     def tearDown(self) -> None:
         """
         Tear down function responsible for cleaning up all the
@@ -63,12 +64,12 @@ class TradingEnvironmentTestCase(TestCase):
         """
 
         logging.info("Tearing down test environment.")
-    
+
     def __update_sut(self, **kwargs) -> None:
         """
         Allows to update already created sut. It speeds up test
         cases' scenarios by enabling injecting certain values
-        also into private sut members. 
+        also into private sut members.
         """
 
         for name, value in kwargs.items():
@@ -91,15 +92,15 @@ class TradingEnvironmentTestCase(TestCase):
         """
         Tests TradingEnvironment's __init__ function.
 
-        Verifies that trading environment is created correctly 
+        Verifies that trading environment is created correctly
         and all the needed functions as well as observation state
-        are calculated properly. 
+        are calculated properly.
 
         Asserts:
             Expected state equals current observation state. All the functions
             work correctly within typical input ranges.
         """
-        
+
         logging.info("Starting creation test case.")
         traiding_consts = self.env.get_trading_consts()
 
@@ -143,7 +144,7 @@ class TradingEnvironmentTestCase(TestCase):
         Verifies step execution with non-waiting actions when they are expected.
         In this case, before executing step function there is no ongoing trades,
         so each correctly performed non-waiting action should be rewarded with static
-        reward adjusment. 
+        reward adjusment.
 
         Asserts:
             Each of two actions is corrctly performed. The environment is correctly
@@ -195,7 +196,7 @@ class TradingEnvironmentTestCase(TestCase):
         Verifies step execution with waiting action when it is expected.
         In this case, before executing step function number of ongoing trades
         equals max possible number of trades to be placed, so wait action is
-        the only one expected and should be rewarded with static reward adjusment. 
+        the only one expected and should be rewarded with static reward adjusment.
 
         Asserts:
             Action is corrctly performed. The environment is correctly
@@ -232,7 +233,7 @@ class TradingEnvironmentTestCase(TestCase):
         Verifies step execution with non-waiting actions when they are not expected.
         In this case, before executing step function number of ongoing trades
         equals max possible number of trades to be placed, so each performed non-waiting
-        action should be rewarded with negative static reward adjusment. 
+        action should be rewarded with negative static reward adjusment.
 
         Asserts:
             Each of two actions is corrctly performed. The environment is correctly
@@ -253,7 +254,7 @@ class TradingEnvironmentTestCase(TestCase):
         expected_nr_of_trades = traiding_consts.MAX_AMOUNT_OF_TRADES
 
         logging.info("Performing buy action.")
-        buy_action = 0 
+        buy_action = 0
         _, reward, _, step_info = self.env.step(buy_action)
 
         logging.info("Checking step info for failure buy.")
@@ -285,8 +286,8 @@ class TradingEnvironmentTestCase(TestCase):
         Verifies step execution with waiting action when it is not expected.
         In this case, before executing step function there is one ongoing trade
         and there was no trades placed for number of days bigger than penalty stop
-        constant, so performed waiting action should be rewarded with negative 
-        static reward adjusment. 
+        constant, so performed waiting action should be rewarded with negative
+        static reward adjusment.
 
         Asserts:
             Action is corrctly performed. The environment is correctly
@@ -336,9 +337,9 @@ class TradingEnvironmentTestCase(TestCase):
         logging.info("Starting step scenario test case.")
         orders = [Order(200, True, 0.95, 1.05), Order(200, True, 0.95, 1.05)]
         self.__update_sut(leverage = 10,
-                          current_orders = orders, 
-                          currently_placed_trades = 2, 
-                          current_budget = 600, 
+                          current_orders = orders,
+                          currently_placed_trades = 2,
+                          current_budget = 600,
                           currently_invested = 400)
 
         expected_budget_after_wait_at_least = 1000
@@ -400,13 +401,13 @@ class TradingEnvironmentTestCase(TestCase):
         Verifies that penalty is correctly calculated for winning trade after
         penalty starts to be applied, for no closed trades when penalty stops
         to be applied, for losing trades when negative rewards adjustment is
-        applied.  
+        applied.
 
         Asserts:
-            For each step peanlty is correctly applied - inflience on reward. 
+            For each step peanlty is correctly applied - inflience on reward.
             First action - reward is a fraction of full positive reward. Second
-            action - there is no reward. Third step - negative reward minus 
-            negative reward adjustment. The environment is correctly updated 
+            action - there is no reward. Third step - negative reward minus
+            negative reward adjustment. The environment is correctly updated
             after each action and correct reward is returned.
         """
 
@@ -435,7 +436,7 @@ class TradingEnvironmentTestCase(TestCase):
 
         logging.info("Performing wait action.")
         wait_action = 1
-        _, reward, _, step_info = self.env.step(wait_action) 
+        _, reward, _, step_info = self.env.step(wait_action)
         # no_trades_placed_for = PENALTY_STARTS + 1
 
         logging.info("Checking step info for getting penalty.")
@@ -446,7 +447,7 @@ class TradingEnvironmentTestCase(TestCase):
         assert round(reward, 0) <= expected_reward_after_first_wait_at_most
 
         logging.info("Performing wait action.")
-        _, reward, _, step_info = self.env.step(wait_action) 
+        _, reward, _, step_info = self.env.step(wait_action)
         # no_trades_placed_for = PENALTY_STOPS
 
         logging.info("Checking step info for getting penalty.")
@@ -454,7 +455,7 @@ class TradingEnvironmentTestCase(TestCase):
         assert round(reward, 0) == expected_reward_after_second_wait
 
         logging.info("Performing wait action.")
-        _, reward, _, step_info = self.env.step(wait_action) 
+        _, reward, _, step_info = self.env.step(wait_action)
         # no_trades_placed_for = PENALTY_STOPS + 1
 
         logging.info("Checking step info for getting penalty.")

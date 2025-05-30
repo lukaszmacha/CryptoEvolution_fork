@@ -21,10 +21,13 @@ class TradingEnvironment(Env):
     configure to award points and impose a penalty in a several way.
     """
 
+    TRAIN_MODE = 'train'
+    TEST_MODE = 'test'
+
     def __init__(self, data_path: str, initial_budget: float, max_amount_of_trades: int, window_size: int,
                  validator: RewardValidatorBase, sell_stop_loss: float, sell_take_profit: float,
-                 buy_stop_loss: float, buy_take_profit: float, penalty_starts: int = 0, penalty_stops: int = 10,
-                 static_reward_adjustment: float = 1) -> None:
+                 buy_stop_loss: float, buy_take_profit: float, test_ratio: float = 0.2, penalty_starts: int = 0,
+                 penalty_stops: int = 10, static_reward_adjustment: float = 1) -> None:
         """
         Class constructor. Allows to define all crucial constans, reward validation methods,
         environmental penalty policies, etc.
@@ -47,6 +50,7 @@ class TradingEnvironment(Env):
                 (long) is closed.
             buy_take_profit (float): Constant used to define winning boundary at which buy order
                 (long) is closed.
+            test_ratio (float): Ratio of data that should be used for testing purposes.
             penalty_starts (int): Constant defining how many trading periods can trader go without placing
                 an order until penalty is imposed. Penalty at range between start and stop constant
                 is calculated as percentile of positive reward, and subtracted from the actual reward.
@@ -56,7 +60,11 @@ class TradingEnvironment(Env):
                 reward it for good one.
         """
 
-        self.__data: pd.DataFrame = pd.read_csv(data_path)
+        if test_ratio < 0.0 or test_ratio >= 1.0:
+            raise ValueError(f"Invalid test_ratio: {test_ratio}. It should be in range [0, 1).")
+
+        self.__data: dict[pd.DataFrame, pd.DataFrame] = self.__load_data(data_path, test_ratio)
+        self.__mode = TradingEnvironment.TRAIN_MODE
         self.__broker: Broker = Broker()
         self.__validator: RewardValidatorBase = validator
 
@@ -88,6 +96,27 @@ class TradingEnvironment(Env):
                                           high = np.ones(len(self.state)) * 3,
                                           dtype=np.float64)
 
+    def __load_data(self, data_path: str, test_size: float) -> dict[pd.DataFrame, pd.DataFrame]:
+        """
+        Loads data from CSV file and splits it into training and testing sets based on the
+        specified test size ratio.
+
+        Parameters:
+            data_path (str): Path to the CSV file containing the stock market data.
+            test_size (float): Ratio of the data to be used for testing.
+
+        Returns:
+            (dict[pd.DataFrame, pd.DataFrame]): Dictionary containing training and testing data frames.
+        """
+
+        data_frame = pd.read_csv(data_path)
+        dividing_index = int(len(data_frame) * (1 - test_size))
+
+        return {
+            TradingEnvironment.TRAIN_MODE: data_frame.iloc[:dividing_index],
+            TradingEnvironment.TEST_MODE: data_frame.iloc[dividing_index:]
+        }
+
     def __prepare_state_data(self) -> list[float]:
         """
         Calculates state data as a list of floats representing current iteration's observation.
@@ -98,7 +127,7 @@ class TradingEnvironment(Env):
            (list[float]): List with current observations for environment.
         """
 
-        current_market_data = self.__data.iloc[self.current_iteration - self.__trading_consts.WINDOW_SIZE : self.current_iteration]
+        current_market_data = self.__data[self.__mode].iloc[self.current_iteration - self.__trading_consts.WINDOW_SIZE : self.current_iteration]
         current_market_data_no_index = current_market_data.select_dtypes(include = [np.number])
         normalized_current_market_data_values = pd.DataFrame(StandardScaler().fit_transform(current_market_data_no_index),
                                                              columns = current_market_data_no_index.columns).values
@@ -111,6 +140,31 @@ class TradingEnvironment(Env):
         current_inner_state_list = [current_profitability_coeff, current_trades_occupancy_coeff, current_no_trades_penalty_coeff]
 
         return current_marked_data_list + current_inner_state_list
+
+    def set_mode(self, mode: str) -> None:
+        """
+        Sets the mode of the environment to either TRAIN_MODE or TEST_MODE.
+
+        Parameters:
+            mode (str): Mode to set for the environment.
+
+        Raises:
+            ValueError: If the provided mode is not valid.
+        """
+
+        if mode not in [TradingEnvironment.TRAIN_MODE, TradingEnvironment.TEST_MODE]:
+            raise ValueError(f"Invalid mode: {mode}. Use TradingEnvironment.TRAIN_MODE or TradingEnvironment.TEST_MODE.")
+        self.__mode = mode
+
+    def get_mode(self) -> str:
+        """
+        Mode getter.
+
+        Returns:
+            (str): Current mode of the environment.
+        """
+
+        return copy.copy(self.__mode)
 
     def get_trading_data(self) -> SimpleNamespace:
         """
@@ -150,7 +204,7 @@ class TradingEnvironment(Env):
             (Int): Length of environment.
         """
 
-        return len(self.__data)
+        return len(self.__data[self.__mode])
 
     def get_environment_spatial_data_dimension(self) -> tuple[int, int]:
         """
@@ -160,18 +214,24 @@ class TradingEnvironment(Env):
             (Int): Dimension of spatial data in environment.
         """
 
-        return (self.__trading_consts.WINDOW_SIZE, self.__data.shape[1] - 1)
+        return (self.__trading_consts.WINDOW_SIZE, self.__data[self.__mode].shape[1] - 1)
 
     def get_data_for_iteration(self, columns: list[str], start: int, stop: int, step: int = 1) -> list[float]:
         """
         Data for certain iterations getter.
+
+        Parameters:
+            columns (list[str]): List of column names to extract from data.
+            start (int): Start iteration index.
+            stop (int): Stop iteration index.
+            step (int): Step between iterations. Default is 1.
 
         Returns:
             (list[float]): Copy of part of data with specified columns
                 over specified iterations.
         """
 
-        return copy.copy(self.__data.loc[start:stop:step, columns].values.ravel().tolist())
+        return copy.copy(self.__data[self.__mode].loc[start:stop:step, columns].values.ravel().tolist())
 
     def step(self, action: int) -> tuple[list[float], float, bool, dict]:
         """
@@ -191,7 +251,7 @@ class TradingEnvironment(Env):
         self.current_iteration += 1
         self.state = self.__prepare_state_data()
 
-        close_changes = self.__data.iloc[self.current_iteration - 2 : self.current_iteration]['close'].values
+        close_changes = self.__data[self.__mode].iloc[self.current_iteration - 2 : self.current_iteration]['close'].values
         stock_change_coeff = 1 + (close_changes[1] - close_changes[0]) / close_changes[0]
         closed_orders= self.__broker.update_orders(stock_change_coeff)
 
@@ -236,7 +296,7 @@ class TradingEnvironment(Env):
             if self.__trading_consts.PENALTY_STOPS < self.__trading_data.no_trades_placed_for:
                 reward -= self.__trading_consts.STATIC_REWARD_ADJUSTMENT
 
-        if (self.current_iteration >= len(self.__data) or
+        if (self.current_iteration >= len(self.__data[self.__mode]) or
             self.__trading_data.current_budget  > 10 * self.__trading_consts.INITIAL_BUDGET or
             (self.__trading_data.current_budget + self.__trading_data.currently_invested) / self.__trading_consts.INITIAL_BUDGET < 0.8):
             done = True
@@ -260,7 +320,7 @@ class TradingEnvironment(Env):
         Renders environment visualization. Will be implemented later.
         """
 
-        # Visualization to be implemented
+        #TODO: Visualization to be implemented
         pass
 
     def reset(self, randkey: Optional[int] = None) -> list[float]:
@@ -278,7 +338,7 @@ class TradingEnvironment(Env):
         """
 
         if randkey is None:
-            randkey = random.randint(self.__trading_consts.WINDOW_SIZE, len(self.__data) - 1)
+            randkey = random.randint(self.__trading_consts.WINDOW_SIZE, len(self.__data[self.__mode]) - 1)
         self.__trading_data.current_budget = self.__trading_consts.INITIAL_BUDGET
         self.__trading_data.currently_invested = 0
         self.__trading_data.no_trades_placed_for = 0
