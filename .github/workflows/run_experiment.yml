@@ -41,19 +41,13 @@ jobs:
           ROLE_NAME: ${{ secrets.ROLE_NAME }}
         run: |
           python scripts/run_gradient_command.py \
-            --command "pip freeze | egrep -v 'jdcal' | xargs pip uninstall -y \
-                       && python -m venv venv \
-                       && source venv/bin/activate \
-                       && git clone https://github.com/${{ github.repository }}.git \
-                       && cd ${{ github.repository }} \
-                       && pip install -r requirements.txt \
-                       && pip install -e . \
-                       && python scripts/train_model.py \
-                          --config \"s3://$BUCKET_NAME/configs/${{ github.event.inputs.config_name }}\" \
-                          --gradient" \
-            --env API_KEY:$GRADIENT_API_KEY,\
-                  ACCOUNT_ID:$ACCOUNT_ID,\
-                  AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_ID,\
-                  AWS_SECRET_ACCESS_KEY:$AWS_SECRET_ACCESS_KEY,\
-                  ROLE_NAME:$ROLE_NAME,\
-                  BUCKET_NAME:$BUCKET_NAME
+            --command "bash -c \"sleep 2m && \
+                                (pip freeze | egrep -v 'jdcal' | xargs pip uninstall -y && \
+                                python -m venv venv && \
+                                source venv/bin/activate && \
+                                git clone https://github.com/${{ github.repository }}.git && \
+                                cd CryptoEvolution && \
+                                pip install -r requirements.txt && \
+                                pip install -e . && \
+                                python scripts/train_model.py --gradient --config_path s3://$BUCKET_NAME/configs/${{ github.event.inputs.config_name }})\"" \
+            --env API_KEY:$GRADIENT_API_KEY,ACCOUNT_ID:$ACCOUNT_ID,AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY:$AWS_SECRET_ACCESS_KEY,ROLE_NAME:$ROLE_NAME,BUCKET_NAME:$BUCKET_NAME

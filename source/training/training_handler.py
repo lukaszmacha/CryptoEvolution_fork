@@ -114,7 +114,7 @@ class TrainingHandler():
             logging.info(f"Training started!")
             logging.info(self.__config_summary)
             logging.info(f"Printing models architecture...")
-            self.__agent.print_model_summary(print_fn = lambda x: logging.info(x))
+            self.__agent.print_model_summary(print_function = lambda x: logging.info(x))
 
             self.__generated_data['train'] = self.__agent.train_agent(self.__environment,
                                                                     self.__nr_of_steps,
