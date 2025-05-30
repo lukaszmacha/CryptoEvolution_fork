@@ -35,56 +35,8 @@
 
           <div class="body" role="main">
             
-  <section id="module-source.coinbase.coinbase_handler">
-<span id="coinbase-module"></span><h1>Coinbase Module<a class="headerlink" href="#module-source.coinbase.coinbase_handler" title="Permalink to this heading">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="source.coinbase.coinbase_handler.CoinBaseHandler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CoinBaseHandler</span></span><a class="headerlink" href="#source.coinbase.coinbase_handler.CoinBaseHandler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Responsible for handling request towards Coinbase API.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="source.coinbase.coinbase_handler.CoinBaseHandler.get_candles_for">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_candles_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trading_pair</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">granularity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="utils.html#source.utils.granularity.Granularity" title="source.utils.granularity.Granularity"><span class="pre">Granularity</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#source.coinbase.coinbase_handler.CoinBaseHandler.get_candles_for" title="Permalink to this definition">¶</a></dt>
-<dd><p>Collects data from Coinbase API given starting date, ending date, granularity and trainding pair. Dependent on amount of
-data segments to fetch, might take some time. Especially, if request exceeds public rates.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>trading_pair</strong> (<em>str</em>) – String representing unique trainding pair symbol.</p></li>
-<li><p><strong>start_date</strong> (<em>str</em>) – String representing date that collected data should start from.</p></li>
-<li><p><strong>end_date</strong> (<em>str</em>) – String representing date that collected data should finish at.</p></li>
-<li><p><strong>granularity</strong> (<a class="reference internal" href="utils.html#source.utils.granularity.Granularity" title="source.utils.granularity.Granularity"><em>Granularity</em></a>) – Enum specifying resolution of collected data - e.g. each
-15 minutes or 1 hour or 6 hours is treated separately</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If given granularity is not member if Granularity enum.</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Collected data frame.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>(pd.DataFrame)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="source.coinbase.coinbase_handler.CoinBaseHandler.get_possible_pairs">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_possible_pairs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#source.coinbase.coinbase_handler.CoinBaseHandler.get_possible_pairs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Collects data from Coinbase API reagrding all possible traiding pairs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Fetched possible traiding pairs inside data frame.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>(pd.DataFrame)</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="coinbase-module">
+<h1>Coinbase Module<a class="headerlink" href="#coinbase-module" title="Permalink to this heading">¶</a></h1>
 </section>
 
 
