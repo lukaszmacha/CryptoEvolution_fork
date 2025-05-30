@@ -1,17 +1,18 @@
 # model/model_building_blocks/vgg16_block.py
- 
+
 import tensorflow as tf
 from tensorflow.keras.layers import SeparableConv2D, Conv2D, MaxPooling2D, BatchNormalization, Activation, Add
 
 class XceptionBlock:
     """
-    Class implementing an Xception block compatible with the TensorFlow API. This block implements 
-    depthwise separable convolutions followed by max pooling and a residual connection, as seen in 
+    Class implementing an Xception block compatible with the TensorFlow API. This block implements
+    depthwise separable convolutions followed by max pooling and a residual connection, as seen in
     the Xception architecture.
 
     Diagram:
 
-    .. code-block:: text
+    ::
+
         Input Tensor --> +-----------------------+   +----------------------+   +--------------------+   +-----+
             |            | SeparableConv2D       |   | SeparableConv2D      |   | MaxPooling2D       |   | Add |
             |            | Filters: N1           |-->| Filters: N2          |-->| Pool Size: K3xK3   |-->|     |
@@ -33,10 +34,10 @@ class XceptionBlock:
         Class constructor.
 
         Parameters:
-            kernels (tuple[tuple[int, int], tuple[int, int], tuple[int, int], tuple[int, int]]): 
+            kernels (tuple[tuple[int, int], tuple[int, int], tuple[int, int], tuple[int, int]]):
                 Sizes of all kernels used within this block.
             filters (tuple[int, int, int]): Number of filters used in the convolutional layers.
-            steps (tuple[tuple[int, int], tuple[int, int]]): Strides for the max pooling and 
+            steps (tuple[tuple[int, int], tuple[int, int]]): Strides for the max pooling and
                 convolutional layers.
         """
 
@@ -52,7 +53,7 @@ class XceptionBlock:
 
     def __call__(self, input_tensor: tf.Tensor) -> tf.Tensor:
         """
-        Applies depthwise separable convolutions with max pooling, and a residual connection to 
+        Applies depthwise separable convolutions with max pooling, and a residual connection to
         the input tensor.
 
         Parameters:
@@ -63,12 +64,12 @@ class XceptionBlock:
         """
 
         # Depthwise separable convolution
-        x_1 = SeparableConv2D(self.__separable_conv_2d_1_nr_of_filters, 
+        x_1 = SeparableConv2D(self.__separable_conv_2d_1_nr_of_filters,
                               self.__separable_conv_2d_1_kernel_size,
                               padding = 'same', use_bias = False)(input_tensor)
         x_1 = BatchNormalization()(x_1)
         x_1 = Activation('relu')(x_1)
-        x_1 = SeparableConv2D(self.__separable_conv_2d_2_nr_of_filters, 
+        x_1 = SeparableConv2D(self.__separable_conv_2d_2_nr_of_filters,
                               self.__separable_conv_2d_2_kernel_size,
                               padding = 'same', use_bias = False)(x_1)
         x_1 = BatchNormalization()(x_1)
@@ -76,7 +77,7 @@ class XceptionBlock:
         x_1 = MaxPooling2D(self.__max_pooling_2d_kernel_size, strides=self.__max_pooling_2d_step, padding = 'same')(x_1)
 
         # Residual connection
-        x_2 = Conv2D(self.__conv_2d_nr_of_filters, self.__conv_2d_kernel_size, strides = self.__conv_2d_step, 
+        x_2 = Conv2D(self.__conv_2d_nr_of_filters, self.__conv_2d_kernel_size, strides = self.__conv_2d_step,
                      padding = 'same', use_bias = False)(input_tensor)
         x_2 = BatchNormalization()(x_2)
 

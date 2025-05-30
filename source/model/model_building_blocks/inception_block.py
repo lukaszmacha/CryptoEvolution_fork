@@ -5,14 +5,15 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Concatenate
 
 class InceptionBlock:
     """
-    Class implementing an Inception block compatible with the TensorFlow API. This block uses 
-    parallel convolutions with different kernel sizes and a max-pooling layer, followed by a 
+    Class implementing an Inception block compatible with the TensorFlow API. This block uses
+    parallel convolutions with different kernel sizes and a max-pooling layer, followed by a
     concatenation of the results, as seen in the Inception architecture.
 
     Diagram:
 
-    .. code-block:: text
-        Input Tensor --> +-----------------------+                               
+    ::
+
+        Input Tensor --> +-----------------------+
             |            | Conv2D - typ. 1xY     |                               +-------------+
             |            | Kernel Size: K1xK1    |------------------------------>| Concatenate |
             |            | Filters: N1           |                               |             |
@@ -34,7 +35,7 @@ class InceptionBlock:
                          | MaxPooling2D          |   | Conv2D                |   |             |
                          | Kernel Size: K4xK4    |-->| Kernel Size: K1xK1    |-->|             |
                          | Stride: S1xS1         |   | Filters: N4           |   +-------------+ --> Output Tensor
-                         +-----------------------+   +-----------------------+                                                          
+                         +-----------------------+   +-----------------------+
     """
 
     def __init__(self, kernels: tuple[tuple[int, int], tuple[int, int], tuple[int, int], tuple[int, int]],
@@ -43,7 +44,7 @@ class InceptionBlock:
         Class constructor.
 
         Parameters:
-            kernels (tuple[tuple[int, int], tuple[int, int], tuple[int, int], tuple[int, int]]): 
+            kernels (tuple[tuple[int, int], tuple[int, int], tuple[int, int], tuple[int, int]]):
                 Sizes of all kernels used within this block.
             filters (tuple[int, int, int, int]): Number of filters used in the convolutional layers.
             steps (tuple[int, int]): Strides for the max pooling layer.
@@ -74,25 +75,25 @@ class InceptionBlock:
         # 1xY convolution
         x_1 = Conv2D(self.__conv_2d_1_nr_of_filters, self.__conv_2d_1_kernel_size, padding = 'same',
                      activation = 'relu')(input_tensor)
-        
+
         # 3xY convolution
         x_2 = Conv2D(self.__conv_2d_2_nr_of_filters, self.__conv_2d_1_kernel_size, padding = 'same',
                      activation = 'relu')(input_tensor)
         x_2 = Conv2D(self.__conv_2d_2_nr_of_filters, self.__conv_2d_2_kernel_size, padding = 'same',
                      activation = 'relu')(x_2)
-        
+
         # 5xY convolution
         x_3 = Conv2D(self.__conv_2d_3_nr_of_filters, self.__conv_2d_1_kernel_size, padding = 'same',
                      activation = 'relu')(input_tensor)
         x_3 = Conv2D(self.__conv_2d_3_nr_of_filters, self.__conv_2d_3_kernel_size, padding = 'same',
                      activation = 'relu')(x_3)
-        
+
         # Pooling
         x_4 = MaxPooling2D(self.__max_pooling_2d_kernel_size, strides=self.__max_pooling_2d_step,
                            padding = 'same')(input_tensor)
         x_4 = Conv2D(self.__conv_2d_4_nr_of_filters, self.__conv_2d_1_kernel_size,
                      padding = 'same', activation = 'relu')(x_4)
-        
+
         output_tensor = Concatenate()([x_1, x_2, x_3, x_4])
 
         return output_tensor
