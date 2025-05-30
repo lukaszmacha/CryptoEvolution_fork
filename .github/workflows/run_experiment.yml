@@ -40,6 +40,7 @@ jobs:
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
           ROLE_NAME: ${{ secrets.ROLE_NAME }}
         run: |
-          python scripts/run_gradient_command.py \ 
+          python scripts/run_gradient_command.py \
+            --url https://github.com/${{ github.repository }}.git \
             --command "bash -c \"sleep 2m && (pip freeze | egrep -v 'jdcal' | xargs pip uninstall -y && python -m venv venv && source venv/bin/activate && git clone https://github.com/rochfedorowicz/CryptoEvolution.git && cd CryptoEvolution && pip install -r requirements.txt && pip install -e .) && sleep 5m && gradient notebooks delete --id \`hostname\` --apiKey \$API_KEY\"" \
             --env API_KEY:$GRADIENT_API_KEY
