@@ -88,6 +88,7 @@ class TrainingConfigTestCase(TestCase):
             "\tnr_of_steps: 3000\n"
             "\tnr_of_episodes: 200\n"
             "\trepeat_test: 10\n"
+            "\ttest_ratio: 0.2\n"
             "\tinitial_budget: 1500.0\n"
             "\tmax_amount_of_trades: 10\n"
             "\twindow_size: 72\n"

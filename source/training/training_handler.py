@@ -116,12 +116,15 @@ class TrainingHandler():
             logging.info(f"Printing models architecture...")
             self.__agent.print_model_summary(print_function = lambda x: logging.info(x))
 
+            self.__environment.set_mode(TradingEnvironment.TRAIN_MODE)
             self.__generated_data['train'] = self.__agent.train_agent(self.__environment,
                                                                     self.__nr_of_steps,
                                                                     self.__steps_per_episode,
                                                                     callbacks,
                                                                     weights_load_path,
                                                                     weights_save_path)
+
+            self.__environment.set_mode(TradingEnvironment.TEST_MODE)
             self.__generated_data['test'] = self.__agent.test_agent(self.__environment,
                                                                     self.__repeat_test)
 

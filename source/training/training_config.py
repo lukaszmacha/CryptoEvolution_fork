@@ -23,7 +23,7 @@ class TrainingConfig():
                  validator: RewardValidatorBase, sell_stop_loss: float = 0.8, sell_take_profit: float = 1.2,
                  buy_stop_loss: float = 0.8, buy_take_profit: float = 1.2, penalty_starts: int = 0,
                  penalty_stops: int = 10, static_reward_adjustment: float = 1, policy: Policy = BoltzmannQPolicy(),
-                 optimizer: Optimizer = Adam(learning_rate=1e-3), repeat_test: int = 10) -> None:
+                 optimizer: Optimizer = Adam(learning_rate=1e-3), repeat_test: int = 10, test_ratio: float = 0.2) -> None:
         """
         Initializes the training configuration with provided parameters.
 
@@ -46,6 +46,7 @@ class TrainingConfig():
             policy (Policy): Policy for action selection during training.
             optimizer (Optimizer): Optimizer to be used for model compilation and training.
             repeat_test (int): Number of times to repeat testing for evaluation.
+            test_ratio (float): Ratio of data to be used for testing vs training.
         """
 
         # Training config
@@ -55,6 +56,7 @@ class TrainingConfig():
 
         # Environment config
         self.__data_path: str = data_path
+        self.__test_ratio = test_ratio
         self.__initial_budget: float = initial_budget
         self.__max_amount_of_trades: int = max_amount_of_trades
         self.__window_size: int = window_size
@@ -89,6 +91,7 @@ class TrainingConfig():
                 f"\tnr_of_steps: {self.nr_of_steps}\n" \
                 f"\tnr_of_episodes: {self.nr_of_episodes}\n" \
                 f"\trepeat_test: {self.repeat_test}\n" \
+                f"\ttest_ratio: {self.__test_ratio}\n" \
                 f"\tinitial_budget: {self.__initial_budget}\n" \
                 f"\tmax_amount_of_trades: {self.__max_amount_of_trades}\n" \
                 f"\twindow_size: {self.__window_size}\n" \
@@ -129,6 +132,7 @@ class TrainingConfig():
                                                              self.__sell_take_profit,
                                                              self.__buy_stop_loss,
                                                              self.__buy_take_profit,
+                                                             self.__test_ratio,
                                                              self.__penalty_starts,
                                                              self.__penalty_stops,
                                                              self.__static_reward_adjustment)
