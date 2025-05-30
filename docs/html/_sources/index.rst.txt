@@ -5,13 +5,17 @@ Welcome to CryptoEvolution's documentation!
    :maxdepth: 3
    :caption: Contents:
 
+   modules/agent
+   modules/aws
    modules/coinbase
    modules/data_handling
-   modules/indicators
-   modules/utils
-   modules/aws
-   modules/gradient
    modules/environment
+   modules/indicators
+   modules/model
+   modules/paperspace
+   modules/plotting
+   modules/training
+   modules/utils
 
 Indices and tables
 ==================

@@ -1,7 +1,7 @@
-Gradient Module
+Paperspace Module
 ===============
 
-.. automodule:: source.gradient.gradient_handler
+.. automodule:: source.paperspace.gradient_handler
    :members:
    :undoc-members:
    :show-inheritance:
