@@ -35,8 +35,80 @@
 
           <div class="body" role="main">
             
-  <section id="agent-module">
-<h1>Agent Module<a class="headerlink" href="#agent-module" title="Permalink to this heading">¶</a></h1>
+  <section id="module-source.agent.agent_handler">
+<span id="agent-module"></span><h1>Agent Module<a class="headerlink" href="#module-source.agent.agent_handler" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="source.agent.agent_handler.AgentHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AgentHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Policy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_actions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OptimizerV2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#source.agent.agent_handler.AgentHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Responsible for encapsulating a DQNAgent along with its associated training and testing procedures.
+This class provides a simplified interface for managing deep reinforcement learning agent operations
+in the trading environment context.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="source.agent.agent_handler.AgentHandler.print_model_summary">
+<span class="sig-name descname"><span class="pre">print_model_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">print_function:</span> <span class="pre">~typing.Optional[callable]</span> <span class="pre">=</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">print&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#source.agent.agent_handler.AgentHandler.print_model_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the model summary using the provided print function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>print_function</strong> (<em>callable</em><em>, </em><em>optional</em>) – Function to use for printing.
+Defaults to built-in print.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="source.agent.agent_handler.AgentHandler.test_agent">
+<span class="sig-name descname"><span class="pre">test_agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">environment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="environment.html#source.environment.trading_environment.TradingEnvironment" title="source.environment.trading_environment.TradingEnvironment"><span class="pre">TradingEnvironment</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#source.agent.agent_handler.AgentHandler.test_agent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests the trained agent on the provided environment.</p>
+<p>Testing involves running the agent on the environment from random starting points
+and recording the performance metrics like asset value changes and rewards.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>environment</strong> (<a class="reference internal" href="environment.html#source.environment.trading_environment.TradingEnvironment" title="source.environment.trading_environment.TradingEnvironment"><em>TradingEnvironment</em></a>) – Trading environment to test on.</p></li>
+<li><p><strong>repeat</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of test episodes to run. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Dictionary containing test metrics including asset values, rewards,</dt><dd><p>and trading performance statistics for each test episode.
+Returns empty dict if agent is not trained.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="source.agent.agent_handler.AgentHandler.train_agent">
+<span class="sig-name descname"><span class="pre">train_agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">environment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="environment.html#source.environment.trading_environment.TradingEnvironment" title="source.environment.trading_environment.TradingEnvironment"><span class="pre">TradingEnvironment</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps_per_episode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tensorflow.python.keras.callbacks.Callback</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_load_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#source.agent.agent_handler.AgentHandler.train_agent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trains the agent on the provided environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>environment</strong> (<a class="reference internal" href="environment.html#source.environment.trading_environment.TradingEnvironment" title="source.environment.trading_environment.TradingEnvironment"><em>TradingEnvironment</em></a>) – Trading environment to train on.</p></li>
+<li><p><strong>nr_of_steps</strong> (<em>int</em>) – Total number of training steps.</p></li>
+<li><p><strong>steps_per_episode</strong> (<em>int</em>) – Maximum steps per episode.</p></li>
+<li><p><strong>callbacks</strong> (<em>list</em><em>[</em><em>Callback</em><em>]</em><em>, </em><em>optional</em>) – List of Keras callbacks for training.</p></li>
+<li><p><strong>weights_load_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to load pre-trained weights.</p></li>
+<li><p><strong>weights_save_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to save weights after training.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing training history metrics.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

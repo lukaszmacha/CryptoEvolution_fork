@@ -37,6 +37,61 @@
             
   <section id="paperspace-module">
 <h1>Paperspace Module<a class="headerlink" href="#paperspace-module" title="Permalink to this heading">¶</a></h1>
+<span class="target" id="module-source.paperspace.gradient_handler"></span><dl class="py data">
+<dt class="sig sig-object py" id="source.paperspace.gradient_handler.DEFAULT_START_COMMAND">
+<span class="sig-name descname"><span class="pre">DEFAULT_START_COMMAND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&quot;</span> <span class="pre">&amp;</span> <span class="pre">PIP_DISABLE_PIP_VERSION_CHECK=1</span> <span class="pre">jupyter</span> <span class="pre">lab</span> <span class="pre">--allow-root</span> <span class="pre">--ip=0.0.0.0</span> <span class="pre">--no-browser</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">--ServerApp.trust_xheaders=True</span> <span class="pre">--ServerApp.disable_check_xsrf=False</span> <span class="pre">--ServerApp.allow_remote_access=True</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">--ServerApp.allow_origin='*'</span> <span class="pre">--ServerApp.allow_credentials=True&quot;</span></em><a class="headerlink" href="#source.paperspace.gradient_handler.DEFAULT_START_COMMAND" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default container type for Paperspace Gradient Notebooks. It is a base container with preinstalled Tensorflow, JAX and Python 3.9.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="source.paperspace.gradient_handler.GradientHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GradientHandler</span></span><a class="headerlink" href="#source.paperspace.gradient_handler.GradientHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Responsible for communication and management of Paperspace Gradient services.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="source.paperspace.gradient_handler.GradientHandler.create_notebook">
+<span class="sig-name descname"><span class="pre">create_notebook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command_to_invoke</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">github_repository_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notebook_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.datetime(2025,</span> <span class="pre">5,</span> <span class="pre">30,</span> <span class="pre">16,</span> <span class="pre">46,</span> <span class="pre">45,</span> <span class="pre">642494)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machine_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['Free-P5000']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#source.paperspace.gradient_handler.GradientHandler.create_notebook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to create notebook basing on certain github repository, starting command and
+sets needed environmental parameters (e.g. variables, machine type, etc.).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command_to_invoke</strong> (<em>str</em>) – Command to be invoked after notebook is started.</p></li>
+<li><p><strong>github_repository_url</strong> (<em>str</em>) – URL to repository that should be downloaded to notebook.</p></li>
+<li><p><strong>notebook_name</strong> (<em>str</em>) – Name that should be given to notebook.</p></li>
+<li><p><strong>machine_types</strong> (<em>list</em>) – List of demanded machine’s types that notebook should be attempted
+to be created on. The first successful creation stops attempts to create notebook for
+machine types that are further in the list. Therefore, machine’s types should be ordered
+from the most wanted to the least one.</p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – Number of hours that notebook should be active for. For free instances maximal
+value for this parameter is 6.</p></li>
+<li><p><strong>environment_dict</strong> (<em>dict</em>) – Dictionary containing defined environmental variables.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If approached problem during notebook creation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="source.paperspace.gradient_handler.GradientHandler.delete_notebook">
+<span class="sig-name descname"><span class="pre">delete_notebook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">notebook_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#source.paperspace.gradient_handler.GradientHandler.delete_notebook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes notebook with the given ID from Paperspace Gradient.</p>
+<p>This method attempts to remove a previously created notebook from
+the Paperspace Gradient platform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>notebook_id</strong> (<em>str</em>) – ID of the notebook to be deleted.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If approached problem during notebook deletion.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
