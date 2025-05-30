@@ -3,7 +3,7 @@ name: Deploy documentation
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["Run tests"]
+    workflows: ['Run tests']
     types:
       - completed
 
@@ -13,69 +13,73 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        ref: main
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9.13'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.13'
 
-    - name: Copy requirements
-      run: |
-        mkdir -p temp_files
-        cp requirements.txt temp_files/.
+      - name: Get commit SHA
+        run: |
+          SHA=$(git rev-parse HEAD)
+          echo "SHA=$SHA" >> $GITHUB_ENV
 
-    - name: Checkout gh-pages branch
-      uses: actions/checkout@v4
-      with:
-        ref: gh-pages
-        path: gh-pages
-  
-    - name: Clean old documentation
-      run: |
-        cd gh-pages/
-        rm -rf docs/
+      - name: Copy requirements
+        run: |
+          mkdir -p temp_files
+          cp requirements.txt temp_files/.
 
-    - name: Paste requirements to gh-pages
-      run: cp temp_files/requirements.txt gh-pages/.
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
 
-    - name: Install dependencies
-      run: |
-        cd gh-pages/
-        sudo rm -rf /usr/lib/python3/dist-packages/OpenSSL
-        python -m pip install --upgrade pip
-        sed -i 's/#-/-/' requirements.txt
-        pip install -r requirements.txt
+      - name: Clean old documentation
+        run: |
+          cd gh-pages/
+          rm -rf docs/
 
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=gh-pages" >> $GITHUB_ENV
+      - name: Paste requirements to gh-pages
+        run: cp temp_files/requirements.txt gh-pages/.
 
-    - name: Generate documentation
-      run: |
-        cd gh-pages/
-        make html
+      - name: Install dependencies
+        run: |
+          cd gh-pages/
+          sudo rm -rf /usr/lib/python3/dist-packages/OpenSSL
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e git+https://github.com/${{ github.repository }}.git@${{ env.SHA }}#egg=CryptoEvolutionPackage
 
-    - name: Add personalized index.html
-      run: |
-        cd gh-pages
-        python scripts/generate_index.py | tee index.html
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=gh-pages" >> $GITHUB_ENV
 
-    - name: Configure Git
-      run: |
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
+      - name: Generate documentation
+        run: |
+          cd gh-pages/
+          make html
 
-    - name: Push changes
-      run: |
-        cd gh-pages
-        rm -rf src/cryptoevolutionpackage || true
-        git add .
-        git reset requirements.txt
-        git status
-        git commit -m "[DOC] Deploy documentation from ${{ github.sha }}"
-        git push origin gh-pages
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Add personalized index.html
+        run: |
+          cd gh-pages
+          python scripts/generate_index.py | tee index.html
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Push changes
+        run: |
+          cd gh-pages
+          rm -rf src/cryptoevolutionpackage || true
+          git add .
+          git status
+          git commit -m "[DOC] Deploy documentation from ${{ github.sha }}"
+          git push origin gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
