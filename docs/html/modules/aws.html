@@ -35,8 +35,73 @@
 
           <div class="body" role="main">
             
-  <section id="aws-module">
-<h1>AWS Module<a class="headerlink" href="#aws-module" title="Permalink to this heading">¶</a></h1>
+  <section id="module-source.aws.aws_handler">
+<span id="aws-module"></span><h1>AWS Module<a class="headerlink" href="#module-source.aws.aws_handler" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="source.aws.aws_handler.AWSHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AWSHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'eu-central-1'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#source.aws.aws_handler.AWSHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Responsible for handling communication with Amazon AWS services.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="source.aws.aws_handler.AWSHandler.download_file_from_s3">
+<span class="sig-name descname"><span class="pre">download_file_from_s3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desired_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#source.aws.aws_handler.AWSHandler.download_file_from_s3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads a file from an S3 bucket to a local path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bucket_name</strong> (<em>str</em>) – The name of the S3 bucket.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – The key/path of the file in the S3 bucket.</p></li>
+<li><p><strong>desired_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The local path where the file will be saved.
+If not provided, the file will be downloaded to the current working directory
+with the original filename.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If the download operation fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="source.aws.aws_handler.AWSHandler.upload_buffer_to_s3">
+<span class="sig-name descname"><span class="pre">upload_buffer_to_s3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StringIO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desired_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#source.aws.aws_handler.AWSHandler.upload_buffer_to_s3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to upload buffer as file body directly to S3 Amazon bucket.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bucket_name</strong> (<em>str</em>) – String denoting bucket name.</p></li>
+<li><p><strong>buffer</strong> (<em>io.StringIO</em>) – Buffer containing data that should be directly
+written to bucket.</p></li>
+<li><p><strong>desired_name</strong> (<em>str</em>) – Desired name to be given to the file after being uploaded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If approached problem during file uploading.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="source.aws.aws_handler.AWSHandler.upload_file_to_s3">
+<span class="sig-name descname"><span class="pre">upload_file_to_s3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desired_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#source.aws.aws_handler.AWSHandler.upload_file_to_s3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to upload local file specified by path to S3 Amazon bucket.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bucket_name</strong> (<em>str</em>) – String denoting bucket name.</p></li>
+<li><p><strong>file_path</strong> (<em>str</em>) – String representing file to the path that should be uploaded.</p></li>
+<li><p><strong>desired_name</strong> (<em>str</em>) – Desired name to be given to the file after being uploaded.
+If left unspecified, name does not change.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If approached problem during file uploading.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
