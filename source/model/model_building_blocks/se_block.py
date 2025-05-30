@@ -6,12 +6,13 @@ from tensorflow.keras.layers import GlobalAveragePooling2D, Reshape, Dense, Mult
 class SEBlock:
     """
     Class implementing a Squeeze-and-Excitation (SE) block compatible with the TensorFlow API.
-    This block applies global average pooling followed by a squeeze-and-excitation operation, 
+    This block applies global average pooling followed by a squeeze-and-excitation operation,
     as described in the SE-Net architecture.
 
     Diagram:
 
-    .. code-block:: text
+    ::
+
         Input Tensor last dimension length - ITldl
         Reduction rate - Rr
 
@@ -22,7 +23,7 @@ class SEBlock:
             |                                  +---------------+   +--------------------+   +--------------+   |          |
             |                                                                                                  |          |
             +------------------------------------------------------------------------------------------------->|          |
-                                                                                                               +----------+ --> Output Tensor                    
+                                                                                                               +----------+ --> Output Tensor
     """
 
     def __init__(self, reduction_ratio: int = 16) -> None:

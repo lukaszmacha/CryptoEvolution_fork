@@ -5,18 +5,19 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D
 
 class Vgg16Block:
     """
-    Class implementing Vgg16 block compatible with tensorflow API. This block is a core component of 
-    the VGG16 architecture, applying two convolutional layers followed by a max pooling layer to 
+    Class implementing Vgg16 block compatible with tensorflow API. This block is a core component of
+    the VGG16 architecture, applying two convolutional layers followed by a max pooling layer to
     downsample and extract features from the input tensor.
 
     Diagram:
 
-    .. code-block:: text
-        Input Tensor --> +-----------------------+   +-----------------------+   +-----------------------+ 
+    ::
+
+        Input Tensor --> +-----------------------+   +-----------------------+   +-----------------------+
                          | Conv2D                |   | Conv2D                |   | MaxPooling2D          |
                          | Filters: N1           |-->| Filters: N2           |-->| Pool Size: K3xK3      |
                          | Kernel Size: K1xK1    |   | Kernel Size: K2xK2    |   |                       |
-                         +-----------------------+   +-----------------------+   +-----------------------+ --> Output Tensor                    
+                         +-----------------------+   +-----------------------+   +-----------------------+ --> Output Tensor
     """
 
     def __init__(self, kernels: tuple[tuple[int, int], tuple[int, int], tuple[int, int]], filters: tuple[int, int]) -> None:
@@ -25,7 +26,7 @@ class Vgg16Block:
 
         Parameters:
             kernels (tuple[tuple[int, int], tuple[int, int], tuple[int, int]]): Sizes of all kernels used within this block.
-            filters (tuple[int, int]): Number of filters used in convolutional layers. 
+            filters (tuple[int, int]): Number of filters used in convolutional layers.
         """
 
         self.__conv_2d_1_kernel_size: tuple[int, int] = kernels[0]
