@@ -1,7 +1,7 @@
 # scripts/run_gradient_command.py
- 
+
 import logging
-from source.gradient import GradientHandler
+from source.paperspace import GradientHandler
 import argparse
 from datetime import datetime
 from typing import Optional
@@ -12,7 +12,7 @@ def str_to_dict(environment_dict_str: str) -> dict:
     if not environment_dict_str:
         return environment_dict
 
-    for environmental_variable in environment_dict_str.split(','):
+    for environmental_variable in environment_dict_str.replace(' ', '').split(','):
         key, value = environmental_variable.split(':')
         environment_dict[key] = value
 
@@ -51,15 +51,15 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description = 'Instantiate training on Paperspace Gradient machine.')
     parser.add_argument('--command', type = str, required = True, help = 'Command invoked at machine.')
-    parser.add_argument('--url', type = str, required = False, 
+    parser.add_argument('--url', type = str, required = False,
                         help = 'Url to github repository that should be copied into machine.')
     parser.add_argument('--name', type = str, required = False, help = 'Name of the notebook.')
     parser.add_argument('--machines', type = str, required = False,
                         help = '''List of machines, that looks like: machine_type_1,machine_type_2,...,machine_type_N.
                         Possible machine types are: e.g. Free-P5000, Free-A4000, Free-RTX4000, Free-RTX5000.''')
-    parser.add_argument('--timeout', type = int, required = False, 
+    parser.add_argument('--timeout', type = int, required = False,
                         help = 'Timeout that machine will be terminated after. Maximal value is 6.')
-    parser.add_argument('--env', type = str, required = False, 
+    parser.add_argument('--env', type = str, required = False,
                         help = 'String denoted dictionary of environmental variables, eg. key:value,key_2:value_2.')
 
     args = parser.parse_args()

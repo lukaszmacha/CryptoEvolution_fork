@@ -112,7 +112,7 @@ class TrainingHandler():
 
         try:
             logging.info(f"Training started!")
-            logging.info(self.__config_summary)
+            logging.info(self.__config_summary.replace('\t', '  '))
             logging.info(f"Printing models architecture...")
             self.__agent.print_model_summary(print_function = lambda x: logging.info(x))
 

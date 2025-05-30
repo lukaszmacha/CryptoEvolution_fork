@@ -1,6 +1,6 @@
 # tests/test_gradient.py
 
-from source.gradient import GradientHandler, DEFAULT_START_COMMAND
+from source.paperspace import GradientHandler, DEFAULT_START_COMMAND
 from unittest.mock import Mock, ANY, patch
 import os
 
@@ -13,8 +13,8 @@ def test_created_notebook__with_2_machine_types_1_fail_1_success(mock_notebooks_
     """
     Tests the create_notebook method of GradientHandler.
 
-    Verifies that the create_notebook method successfully creates a notebook using 
-    the Paperspace Gradient API. The NotebooksClient's create method is mocked to simulate the creation 
+    Verifies that the create_notebook method successfully creates a notebook using
+    the Paperspace Gradient API. The NotebooksClient's create method is mocked to simulate the creation
     process without making actual API calls.
 
     Asserts:
@@ -36,10 +36,10 @@ def test_created_notebook__with_2_machine_types_1_fail_1_success(mock_notebooks_
     expected_environment = dict()
 
     gradient_handler = GradientHandler()
-    notebook_id = gradient_handler.create_notebook(github_repository_url = expected_workspace, 
+    notebook_id = gradient_handler.create_notebook(github_repository_url = expected_workspace,
                                                    command_to_invoke = expected_command,
                                                    machine_types = expected_machine_types)
-    
+
     assert notebook_id == mocked_notebook_id
     assert mock_notebooks_client_create.call_count == len(expected_machine_types)
     for expected_machine_type in expected_machine_types:
