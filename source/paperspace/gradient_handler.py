@@ -1,4 +1,4 @@
-# gradient/gradient_handler.py
+# paperspace/gradient_handler.py
 
 from gradient import NotebooksClient
 import os

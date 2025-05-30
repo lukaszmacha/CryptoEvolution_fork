@@ -9,7 +9,7 @@ from typing import Any, Type
 from datetime import datetime
 
 from source.training import TrainingHandler, TrainingConfig
-from source.gradient import GradientHandler
+from source.paperspace import GradientHandler
 from source.utils import CallbackFromStringConverter, ValidatorFromStringConverter, \
     ModelBluePrintFromStringConverter, OptimizerFromStringConverter, PolicyFromStringConverter
 from source.aws import AWSHandler
