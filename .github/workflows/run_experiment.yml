@@ -49,7 +49,7 @@ jobs:
                                 cd CryptoEvolution && \
                                 pip install -r requirements.txt && \
                                 pip install -e . && \
-                                python scripts/train_model.py --gradient --config_path s3://$BUCKET_NAME/configs/${{ github.event.inputs.config_name }})\"" \
+                                python scripts/train_model.py --config_path s3://$BUCKET_NAME/configs/${{ github.event.inputs.config_name }})\"" \
             --env "GRADIENT_API_KEY:$GRADIENT_API_KEY,\
                   GRADIENT_PROJECT_ID:$GRADIENT_PROJECT_ID,\
                   ACCOUNT_ID:$ACCOUNT_ID,\
