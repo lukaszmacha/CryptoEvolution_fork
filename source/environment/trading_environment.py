@@ -113,8 +113,8 @@ class TradingEnvironment(Env):
         dividing_index = int(len(data_frame) * (1 - test_size))
 
         return {
-            TradingEnvironment.TRAIN_MODE: data_frame.iloc[:dividing_index],
-            TradingEnvironment.TEST_MODE: data_frame.iloc[dividing_index:]
+            TradingEnvironment.TRAIN_MODE: data_frame.iloc[:dividing_index].reset_index(drop=True),
+            TradingEnvironment.TEST_MODE: data_frame.iloc[dividing_index:].reset_index(drop=True)
         }
 
     def __prepare_state_data(self) -> list[float]:
@@ -296,7 +296,7 @@ class TradingEnvironment(Env):
             if self.__trading_consts.PENALTY_STOPS < self.__trading_data.no_trades_placed_for:
                 reward -= self.__trading_consts.STATIC_REWARD_ADJUSTMENT
 
-        if (self.current_iteration >= len(self.__data[self.__mode]) or
+        if (self.current_iteration >= self.get_environment_length() - 1 or
             self.__trading_data.current_budget  > 10 * self.__trading_consts.INITIAL_BUDGET or
             (self.__trading_data.current_budget + self.__trading_data.currently_invested) / self.__trading_consts.INITIAL_BUDGET < 0.8):
             done = True
@@ -338,7 +338,7 @@ class TradingEnvironment(Env):
         """
 
         if randkey is None:
-            randkey = random.randint(self.__trading_consts.WINDOW_SIZE, len(self.__data[self.__mode]) - 1)
+            randkey = random.randint(self.__trading_consts.WINDOW_SIZE, self.get_environment_length() - 1)
         self.__trading_data.current_budget = self.__trading_consts.INITIAL_BUDGET
         self.__trading_data.currently_invested = 0
         self.__trading_data.no_trades_placed_for = 0
