@@ -2,10 +2,10 @@
 
 from typing import Any, Type
 
-from .base_from_string_converter import BaseFromStringConverter
-from ..model.model_blue_prints.vggception_cnn_blue_print import VGGceptionCnnBluePrint, BaseBluePrint
+from .from_string_converter_base import FromStringConverterBase
+from ..model.model_blue_prints.vggception_cnn_blue_print import VGGceptionCnnBluePrint, BluePrintBase
 
-class ModelBluePrintFromStringConverter(BaseFromStringConverter):
+class ModelBluePrintFromStringConverter(FromStringConverterBase):
     """
     Converts string identifiers to model blueprint classes.
 
@@ -24,6 +24,6 @@ class ModelBluePrintFromStringConverter(BaseFromStringConverter):
         """
 
         self._kwargs: dict[str, Any] = kwargs
-        self._value_map: dict[str, Type[BaseBluePrint]] = {
+        self._value_map: dict[str, Type[BluePrintBase]] = {
             'vggception_blueprint': VGGceptionCnnBluePrint
         }

@@ -1,13 +1,17 @@
 # model/model_blue_prints/basic_cnn_blue_print.py
 
-from tensorflow.keras import Model, layers
+# global imports
 import math
+from tensorflow.keras import Model, layers
 
-from .base_blue_print import BaseBluePrint
-from ..model_building_blocks.vgg16_block import Vgg16Block
-from ..model_building_blocks.xception_block import XceptionBlock
+# local imports
+from source.model import BluePrintBase
+from source.model import Vgg16Block
+from source.model import XceptionBlock
+from source.model import ModelAdapterBase
+from source.model import TFModelAdapter
 
-class VGGceptionCnnBluePrint(BaseBluePrint):
+class VGGceptionCnnBluePrint(BluePrintBase):
     """
     Blueprint for creating a hybrid CNN architecture combining VGG and Xception patterns.
 
@@ -19,7 +23,7 @@ class VGGceptionCnnBluePrint(BaseBluePrint):
 
     def instantiate_model(self, input_shape: tuple[int, int], output_length: int, spatial_data_shape: tuple[int, int],
                           number_of_filters: int = 32, cnn_squeezing_coeff: int = 2, dense_squeezing_coeff: int = 2,
-                          dense_repetition_coeff: int = 1, filters_number_coeff: int = 2) -> Model:
+                          dense_repetition_coeff: int = 1, filters_number_coeff: int = 2) -> ModelAdapterBase:
         """
         Creates and returns a hybrid VGG-Xception CNN model according to specified parameters.
 
@@ -88,4 +92,4 @@ class VGGceptionCnnBluePrint(BaseBluePrint):
 
         output = layers.Dense(output_length, activation='softmax')(dense)
 
-        return Model(inputs=input_vector, outputs=output)
+        return TFModelAdapter(Model(inputs = input_vector, outputs = output))

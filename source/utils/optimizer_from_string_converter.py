@@ -3,9 +3,9 @@
 from typing import Any, Type
 from tensorflow.keras.optimizers import Adam, Optimizer
 
-from .base_from_string_converter import BaseFromStringConverter
+from .from_string_converter_base import FromStringConverterBase
 
-class OptimizerFromStringConverter(BaseFromStringConverter):
+class OptimizerFromStringConverter(FromStringConverterBase):
     """
     Converts string identifiers to Keras optimizer classes.
 

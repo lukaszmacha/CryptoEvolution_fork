@@ -13,8 +13,8 @@ class RewardValidatorBase():
         Class constructor. Parameters are specified in derivative classes.
         """
 
-        raise NotImplementedError
-    
+        raise NotImplementedError("Subclasses must implement this method.")
+
     def validate_orders(self, orders: list[Order]) -> float:
         """
         Calculates number of points to be rewarded for list of closed trades.
@@ -26,4 +26,4 @@ class RewardValidatorBase():
             (float): Calcualted reward.
         """
 
-        raise NotImplementedError
+        raise NotImplementedError("Subclasses must implement this method.")

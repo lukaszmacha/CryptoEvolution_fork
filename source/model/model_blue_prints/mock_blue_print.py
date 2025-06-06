@@ -1,34 +1,25 @@
 # model/model_blue_prints/mock_blue_print.py
 
-from tensorflow.keras import Model
+# global imports
 
-from .base_blue_print import BaseBluePrint
+# local imports
+from source.model import BluePrintBase
+from source.model import ModelAdapterBase
 
-class MockBluePrint(BaseBluePrint):
-    """
-    Mock implementation of the BaseBluePrint for testing purposes.
+class MockBluePrint(BluePrintBase):
+    """"""
 
-    This class provides a simple implementation that returns a pre-configured model
-    rather than constructing one. It's primarily used in tests to isolate the model
-    creation logic from other components being tested.
-    """
+    def __init__(self, model_to_be_returned: ModelAdapterBase) -> None:
+        """"""
 
-    def __init__(self, model_to_be_returned: Model) -> None:
-        """
-        Initialize the mock blueprint with a pre-configured model.
+        self.__model_adapter_to_be_returned: ModelAdapterBase = model_to_be_returned
 
-        Parameters:
-            model_to_be_returned (Model): Keras model instance that will be returned
-                when instantiate_model is called.
-        """
-
-        self.__model_to_be_returned: Model = model_to_be_returned
-
-    def instantiate_model(self, **kwargs) -> Model:
+    def instantiate_model(self, input_shape: tuple[int, int], output_length: int,
+                          spatial_data_shape: tuple[int, int],  **kwargs) -> ModelAdapterBase:
         """
         Returns the pre-configured model regardless of input parameters.
 
-        This method implements the abstract method from BaseBluePrint but
+        This method implements the abstract method from BluePrintBase but
         ignores the input parameters and simply returns the model provided
         at initialization.
 
@@ -36,7 +27,7 @@ class MockBluePrint(BaseBluePrint):
             **kwargs: Variable keyword arguments (ignored).
 
         Returns:
-            Model: The pre-configured Keras model provided at initialization.
+            ModelAdapterBase: The pre-configured model provided at initialization.
         """
 
-        return self.__model_to_be_returned
+        return self.__model_adapter_to_be_returned
