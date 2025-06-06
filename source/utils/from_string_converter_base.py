@@ -3,7 +3,7 @@
 from typing import Any
 import logging
 
-class BaseFromStringConverter():
+class FromStringConverterBase():
     """
     Base class for string-to-object conversion functionality.
 

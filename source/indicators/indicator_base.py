@@ -14,8 +14,8 @@ class IndicatorHandlerBase():
         Class constructor. Parameters are specified in derivative classes.
         """
 
-        raise NotImplementedError
-        
+        raise NotImplementedError("Subclasses must implement this method.")
+
     def calculate(self, data: pd.DataFrame) -> pd.DataFrame:
         """
         Calculates indicator values for given data.
@@ -27,5 +27,4 @@ class IndicatorHandlerBase():
             (pd.DataFrame): Output data with calculated values for certain indicator.
         """
 
-        raise NotImplementedError
-        
+        raise NotImplementedError("Subclasses must implement this method.")

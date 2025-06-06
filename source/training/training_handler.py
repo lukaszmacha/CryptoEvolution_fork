@@ -1,5 +1,6 @@
 # training/training_handler.py
 
+# global imports
 import logging
 import io
 import matplotlib.pyplot as plt
@@ -10,12 +11,12 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.lib.utils import ImageReader
 
-from .training_config import TrainingConfig
-from ..environment.trading_environment import TradingEnvironment
-from ..agent.agent_handler import AgentHandler
-from ..plotting.plot_responsibility_chain_base import PlotResponsibilityChainBase
-from ..plotting.plot_testing_history_responsibility_chain import PlotTestingHistoryResponsibilityChain
-from ..plotting.plot_training_history_responsibility_chain import PlotTrainingHistoryResponsibilityChain
+# local imports
+from source.agent import AgentHandler
+from source.plotting import ClassificationTestingPlotResponsibilityChain, \
+    ClassificationTrainingPlotResponsibilityChain, PlotResponsibilityChainBase, \
+    PlotTestingHistoryResponsibilityChain, PlotTrainingHistoryResponsibilityChain
+from source.training import TrainingConfig
 
 class TrainingHandler():
     """
@@ -27,9 +28,7 @@ class TrainingHandler():
     entry point for executing and documenting trading agent training.
     """
 
-    """
-    PDF report related constants
-    """
+    # Constants used locally
     HEADING_SPACING = 20
     CAPTION_FONT_SIZE = 14
     TEXT_FONT_SIZE = 8
@@ -65,17 +64,26 @@ class TrainingHandler():
         """
 
         # Training related configuration
-        self.__environment: TradingEnvironment = config.instantiate_environment()
-        self.__agent: AgentHandler = config.instantiate_agent()
+        self.__agent: AgentHandler = config.instantiate_agent_handler()
         self.__nr_of_steps: int = config.nr_of_steps
         self.__repeat_test: int = config.repeat_test
-        self.__steps_per_episode: int = int(config.nr_of_steps / config.nr_of_episodes)
+        self.__nr_of_episodes: int = config.nr_of_episodes
 
         # Report related configuration
         self.__config_summary = str(config)
+        # self.__plotting_chain: PlotResponsibilityChainBase = PlotTestingHistoryResponsibilityChain()
+        # self.__plotting_chain.add_next_chain_link(PlotTrainingHistoryResponsibilityChain())
+        # self.__plotting_chain.add_next_chain_link(ClassificationTrainingPlotResponsibilityChain())
+        # self.__plotting_chain.add_next_chain_link(ClassificationTestingPlotResponsibilityChain())
+        classification_training_plot_chain = ClassificationTrainingPlotResponsibilityChain()
+        classification_training_plot_chain.add_next_chain_link(ClassificationTestingPlotResponsibilityChain())
+        plot_training_history_chain = PlotTrainingHistoryResponsibilityChain()
+        plot_training_history_chain.add_next_chain_link(classification_training_plot_chain)
         self.__plotting_chain: PlotResponsibilityChainBase = PlotTestingHistoryResponsibilityChain()
-        self.__plotting_chain.add_next_chain_link(PlotTrainingHistoryResponsibilityChain())
+        self.__plotting_chain.add_next_chain_link(plot_training_history_chain)
         self.__generated_data: dict = {}
+        self.__generated_data['train'] = {}
+        self.__generated_data['test'] = {}
         self.__logs: io.StringIO = io.StringIO()
         self.__page_width = page_width
         self.__page_height = page_height
@@ -110,30 +118,29 @@ class TrainingHandler():
         root_logger = logging.getLogger()
         root_logger.addHandler(log_streamer)
 
-        try:
-            logging.info(f"Training started!")
-            logging.info(self.__config_summary.replace('\t', '  '))
-            logging.info(f"Printing models architecture...")
-            self.__agent.print_model_summary(print_function = lambda x: logging.info(x))
+        # try:
+        logging.info(f"Training started!")
+        logging.info(self.__config_summary.replace('\t', '  '))
+        logging.info(f"Printing models architecture...")
+        self.__agent.print_model_summary(print_function = lambda x: logging.info(x))
 
-            self.__environment.set_mode(TradingEnvironment.TRAIN_MODE)
-            self.__generated_data['train'] = self.__agent.train_agent(self.__environment,
-                                                                    self.__nr_of_steps,
-                                                                    self.__steps_per_episode,
-                                                                    callbacks,
-                                                                    weights_load_path,
-                                                                    weights_save_path)
+        train_keys, train_data = self.__agent.train_agent(self.__nr_of_steps, self.__nr_of_episodes,
+                                                          callbacks, weights_load_path, weights_save_path)
+        for key, data in zip(train_keys, train_data):
+            self.__generated_data['train'][key] = data
 
-            self.__environment.set_mode(TradingEnvironment.TEST_MODE)
-            self.__generated_data['test'] = self.__agent.test_agent(self.__environment,
-                                                                    self.__repeat_test)
+        test_keys, test_data = self.__agent.test_agent(self.__repeat_test)
+        for (iteration, key_list), (_, data_list) in zip(test_keys.items(), test_data.items()):
+            self.__generated_data['test'][iteration] = {}
+            for key, data in zip(key_list, data_list):
+                self.__generated_data['test'][iteration][key] = data
 
-            logging.info(f"Training finished!")
-        except Exception as e:
-            logging.error(f"Training failed! Original error: {e}")
-        finally:
-            root_logger.removeHandler(log_streamer)
-            log_streamer.close()
+        logging.info(f"Training finished!")
+        # except Exception as e:
+        #     logging.error(f"Training failed! Original error: {e}")
+        # finally:
+        root_logger.removeHandler(log_streamer)
+        log_streamer.close()
 
     def __handle_plot_generation(self, data: dict) -> Optional[ImageReader]:
         """
@@ -272,29 +279,29 @@ class TrainingHandler():
             pdf.showPage()
 
         # Draw training plot
-        data = {
-            'key': 'training_history',
-            'plot_data': self.__generated_data['train']
-        }
-        plot_buffer = self.__handle_plot_generation(data)
-        if plot_buffer is not None:
-            self.__draw_caption(pdf, "Training performance")
-            pdf.drawImage(plot_buffer, inch, self.__page_height - 7.5 * inch, width = 6 * inch,
-                          preserveAspectRatio = True)
-            pdf.showPage()
+        for key, data in self.__generated_data['train'].items():
+            plot_buffer = self.__handle_plot_generation({
+                'key': key,
+                'plot_data': data
+            })
+            if plot_buffer is not None:
+                self.__draw_caption(pdf, "Training performance")
+                pdf.drawImage(plot_buffer, 0.5 * inch, 1 * inch, width = letter[0] - 1 * inch,
+                                  height = letter[1] - 2 * inch)
+                pdf.showPage()
 
         # Draw testing plots
-        for index, testing_data in self.__generated_data['test'].items():
-            data = {
-                'key': 'testing_history',
-                'plot_data': testing_data
-            }
-            plot_buffer = self.__handle_plot_generation(data)
-            if plot_buffer is not None:
-                self.__draw_caption(pdf, f"Testing outcome, trial: {index + 1}")
-                pdf.drawImage(plot_buffer, inch, self.__page_height - 7.5 * inch, width = 6 * inch,
-                              preserveAspectRatio = True)
-                pdf.showPage()
+        for iteration, key_data_pair in self.__generated_data['test'].items():
+            for key, data in key_data_pair.items():
+                plot_buffer = self.__handle_plot_generation({
+                    'key': key,
+                    'plot_data': data
+                })
+                if plot_buffer is not None:
+                    self.__draw_caption(pdf, f"Testing outcome, trial: {iteration}")
+                    pdf.drawImage(plot_buffer, 0.5 * inch, 1 * inch, width = letter[0] - 1 * inch,
+                                  height = letter[1] - 2 * inch)
+                    pdf.showPage()
 
         pdf.save()
         logging.info(f"Report generated!")

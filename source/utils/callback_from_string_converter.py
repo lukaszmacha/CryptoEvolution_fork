@@ -3,14 +3,14 @@
 from typing import Any, Type
 from  tensorflow.keras.callbacks import Callback, ReduceLROnPlateau, EarlyStopping
 
-from .base_from_string_converter import BaseFromStringConverter
+from .from_string_converter_base import FromStringConverterBase
 
-class CallbackFromStringConverter(BaseFromStringConverter):
+class CallbackFromStringConverter(FromStringConverterBase):
     """
     Converts string identifiers to Keras callback classes.
 
     This class implements a specific string-to-object conversion for Keras callback
-    classes. It maps string names like 'reduce_rl_on_plateau' to their corresponding
+    classes. It maps string names like 'reduce_lr_on_plateau' to their corresponding
     callback implementations like ReduceLROnPlateau.
     """
 
@@ -25,6 +25,6 @@ class CallbackFromStringConverter(BaseFromStringConverter):
 
         self._kwargs: dict[str, Any] = kwargs
         self._value_map: dict[str, Type[Callback]] = {
-            'reduce_rl_on_plateau': ReduceLROnPlateau,
+            'reduce_lr_on_plateau': ReduceLROnPlateau,
             'early_stopping': EarlyStopping
         }

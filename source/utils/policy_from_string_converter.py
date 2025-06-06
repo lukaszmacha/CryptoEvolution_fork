@@ -3,9 +3,9 @@
 from typing import Any, Type
 from rl.policy import BoltzmannQPolicy, EpsGreedyQPolicy, LinearAnnealedPolicy, Policy
 
-from .base_from_string_converter import BaseFromStringConverter
+from .from_string_converter_base import FromStringConverterBase
 
-class PolicyFromStringConverter(BaseFromStringConverter):
+class PolicyFromStringConverter(FromStringConverterBase):
     """
     Converts string identifiers to reinforcement learning policy classes.
 

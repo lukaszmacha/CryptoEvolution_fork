@@ -2,12 +2,12 @@
 
 from typing import Any, Type
 
-from .base_from_string_converter import BaseFromStringConverter
+from .from_string_converter_base import FromStringConverterBase
 from ..environment.points_reward_validator import PointsRewardValidator
 from ..environment.price_reward_validator import PriceRewardValidator
 from ..environment.reward_validator_base import RewardValidatorBase
 
-class ValidatorFromStringConverter(BaseFromStringConverter):
+class ValidatorFromStringConverter(FromStringConverterBase):
     """
     Converts string identifiers to reward validator classes.
 
