@@ -46,7 +46,7 @@ jobs:
                                 python -m venv venv && \
                                 source venv/bin/activate && \
                                 git clone https://github.com/${{ github.repository }}.git && \
-                                cd CryptoEvolution && \
+                                cd CryptoEvolution_fork && \
                                 pip install -r requirements.txt && \
                                 pip install -e . && \
                                 python scripts/train_model.py --gradient --config_path s3://$BUCKET_NAME/configs/${{ github.event.inputs.config_name }})\"" \
