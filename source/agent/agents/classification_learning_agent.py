@@ -13,12 +13,10 @@ from source.agent import ClassificationTestable
 class ClassificationLearningAgent(AgentBase, ClassificationTestable):
     """"""
 
-    def classification_fit(self, input_data, output_data, batch_size: int,
-                           epochs: int, callbacks: list[Callback]) -> dict[str, Any]:
+    def classification_fit(self, input_data, output_data, **kwargs) -> dict[str, Any]:
         """"""
 
-        return self._model_adapter.fit(input_data, output_data, batch_size = batch_size,
-                                       epochs = epochs, callbacks = callbacks).history
+        return self._model_adapter.fit(input_data, output_data, **kwargs)
 
     def classify(self, data: pd.DataFrame) -> list[list[float]]:
         """"""

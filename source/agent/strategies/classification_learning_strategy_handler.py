@@ -5,6 +5,8 @@ from typing import Any
 from tensorflow.keras.callbacks import Callback
 import logging
 import numpy as np
+from sklearn.model_selection import learning_curve
+from tensorflow.keras.utils import to_categorical
 
 # local imports
 from source.agent import LearningStrategyHandlerBase
@@ -12,6 +14,8 @@ from source.agent import AgentBase
 from source.agent import ClassificationLearningAgent
 from source.environment import TradingEnvironment
 from source.model import BluePrintBase
+from source.model import TFModelAdapter
+from source.model import SciKitLearnModelAdapter
 
 class ClassificationLearningStrategyHandler(LearningStrategyHandlerBase):
     """"""
@@ -49,8 +53,50 @@ class ClassificationLearningStrategyHandler(LearningStrategyHandlerBase):
         env_length = environment.get_environment_length()
         currency_prices = environment.get_data_for_iteration(['close'], 0, env_length - 1)
         currency_prices = (np.array(currency_prices) / currency_prices[0]).tolist()
+        tensorflow_arguments = {}
+        learning_curve_data = {}
+
+        if isinstance(agent._model_adapter, TFModelAdapter):
+            logging.info("Using TensorFlow model adapter for training.")
+            tensorflow_arguments = {
+                "batch_size": batch_size,
+                "epochs": nr_of_episodes,
+                "callbacks": callbacks
+            }
+            from imblearn.over_sampling import SMOTE
+            input_data = np.squeeze(input_data, axis=1)
+            output_data = np.argmax(output_data, axis=1)
+            input_data, output_data = SMOTE(sampling_strategy='auto').fit_resample(input_data, output_data)
+            input_data = np.expand_dims(np.array(input_data), axis = 1)
+            nr_of_classes = len(environment.get_trading_consts().OUTPUT_CLASSES)
+            output_data = to_categorical(np.array(output_data), num_classes = nr_of_classes)
+
+        logging.info(f"{np.sum(output_data, axis = 0)}")
+        logging.info(f"Input data shape: {input_data.shape}, Output data shape: {output_data.shape}")
+
+        if isinstance(agent._model_adapter, SciKitLearnModelAdapter):
+            logging.info("Using SciKitLearn model adapter for training.")
+            # Get the underlying model
+            model = agent._model_adapter.get_model()
+
+            # Generate learning curve data
+            train_sizes = np.linspace(0.1, 1.0, 5)  # 5 points for faster computation
+            train_sizes_abs, train_scores, valid_scores = learning_curve(
+                model, input_data, output_data,
+                train_sizes=train_sizes, cv=5,
+                scoring='accuracy', n_jobs=-1
+            )
+
+            # Store learning curve data
+            learning_curve_data = {
+                "train_sizes": train_sizes_abs,
+                "train_scores_mean": np.mean(train_scores, axis=1),
+                "train_scores_std": np.std(train_scores, axis=1),
+                "valid_scores_mean": np.mean(valid_scores, axis=1),
+                "valid_scores_std": np.std(valid_scores, axis=1)
+            }
 
         return [ClassificationLearningStrategyHandler.PLOTTING_KEY], \
-            [{"history": agent.classification_fit(input_data, output_data, batch_size = batch_size,
-                                      epochs = nr_of_episodes, callbacks = callbacks),
-              "currency_prices": currency_prices}]
+            [{"history": agent.classification_fit(input_data, output_data, **tensorflow_arguments),
+              "currency_prices": currency_prices,
+              "learning_curve_data": learning_curve_data}]

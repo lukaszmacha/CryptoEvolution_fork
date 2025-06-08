@@ -3,7 +3,7 @@
 from typing import Any, Type
 
 from .from_string_converter_base import FromStringConverterBase
-from ..model.model_blue_prints.vggception_cnn_blue_print import VGGceptionCnnBluePrint, BluePrintBase
+from source.model import VGGceptionCnnBluePrint, BluePrintBase, SVMBluePrint, CDT1DCnnBluePrint
 
 class ModelBluePrintFromStringConverter(FromStringConverterBase):
     """
@@ -25,5 +25,7 @@ class ModelBluePrintFromStringConverter(FromStringConverterBase):
 
         self._kwargs: dict[str, Any] = kwargs
         self._value_map: dict[str, Type[BluePrintBase]] = {
-            'vggception_blueprint': VGGceptionCnnBluePrint
+            'vggception_blueprint': VGGceptionCnnBluePrint,
+            'cdt_1d_cnn_blueprint': CDT1DCnnBluePrint,
+            'svm_blueprint': SVMBluePrint
         }

@@ -10,20 +10,21 @@ from source.environment import LabelAnnotatorBase
 class SimpleLabelAnnotator(LabelAnnotatorBase):
     """"""
 
-    def __init__(self) -> None:
+    def __init__(self, alpha: float = 0.55) -> None:
         """"""
 
         super().__init__()
         self._output_classes.UP_TREND = 0
         self._output_classes.DOWN_TREND = 1
         self._output_classes.NO_TREND = 2
+        self.__alpha = alpha
 
-    def _classify_trend(self, price_diff: float) -> int:
+    def _classify_trend(self, price_diff: float, volatility: float) -> int:
         """"""
 
-        if price_diff > 0.01:
-                return self._output_classes.UP_TREND
-        elif price_diff < -0.01:
+        if price_diff > self.__alpha * volatility:
+            return self._output_classes.UP_TREND
+        elif price_diff < -self.__alpha * volatility:
             return self._output_classes.DOWN_TREND
         else:
             return self._output_classes.NO_TREND

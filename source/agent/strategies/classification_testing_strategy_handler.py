@@ -21,10 +21,14 @@ class ClassificationTestingStrategyHandler(TestingStrategyHandlerBase):
 
         classes = list(environment.get_trading_consts().OUTPUT_CLASSES.keys())
         input_data, output_data = environment.get_labeled_data()
-        prediction_probabilities = testable_agent.classify(input_data)
 
-        y_true = np.argmax(output_data, axis = 1)
-        y_pred = np.argmax(prediction_probabilities, axis = 1)
+        # input_data = np.squeeze(input_data, axis=1)
+        # output_data = np.argmax(output_data, axis=1)
+        prediction_probabilities = testable_agent.classify(input_data)
+        print(prediction_probabilities)
+
+        y_true = np.argmax(output_data, axis=1)
+        y_pred = np.argmax(prediction_probabilities, axis=1)
 
         conf_matrix = confusion_matrix(y_true, y_pred)
         class_report = classification_report(y_true, y_pred, target_names = classes,

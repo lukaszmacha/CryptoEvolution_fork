@@ -12,6 +12,7 @@ from types import SimpleNamespace
 from typing import Optional
 import copy
 from tensorflow.keras.utils import to_categorical
+import logging
 
 # local imports
 from source.environment import Broker
@@ -130,12 +131,15 @@ class TradingEnvironment(Env):
         """"""
 
         new_rows = []
-        for i in range(self.current_iteration, self.get_environment_length()):
+        for i in range(self.current_iteration, self.get_environment_length() - 1):
             data_row = self.__prepare_state_data(slice(i - self.__trading_consts.WINDOW_SIZE, i), include_trading_data = False)
             new_rows.append(data_row)
 
+        logging.info(f"New Rows Count: {len(self.__data[self.__mode])}")
         new_data = pd.DataFrame(new_rows, columns=[f"feature_{i}" for i in range(len(new_rows[0]))])
+        logging.info(f"New Data Shape: {new_data.shape}")
         labels = self.__label_annotator.annotate(self.__data[self.__mode]).shift(-self.current_iteration)
+        logging.info(f"Labels NaN Count: {labels.shape}")
 
         return new_data, labels.dropna()
 
@@ -247,6 +251,7 @@ class TradingEnvironment(Env):
         """"""
 
         input_data, output_data = self.__prepare_labeled_data()
+        logging.info(f"Here Input data shape: {input_data.shape}, Output data shape: {output_data.shape}")
         input_data = np.expand_dims(np.array(input_data), axis = 1)
         output_data = to_categorical(np.array(output_data),
                                      num_classes = len(self.__trading_consts.OUTPUT_CLASSES))

@@ -5,6 +5,7 @@ from tensorflow.keras.models import Model
 from typing import Callable
 from tensorflow.keras.optimizers import Optimizer
 from typing import Any, Optional
+from sklearn.model_selection import train_test_split
 
 # local imports
 from source.model import ModelAdapterBase
@@ -57,8 +58,10 @@ class TFModelAdapter(ModelAdapterBase):
     def fit(self, input_data: Any, output_data: Any, **kwargs) -> dict:
         """"""
 
-        return self.__model.fit(input_data, output_data,
-                                validation_split = 0.1, **kwargs)
+        X_train, X_val, y_train, y_val = train_test_split(input_data, output_data, test_size=0.1,
+                                                          random_state=42, stratify=output_data)
+        return self.__model.fit(X_train, y_train,
+                                validation_data=(X_val, y_val), **kwargs).history
 
     def predict(self, data: Any) -> dict:
         """"""

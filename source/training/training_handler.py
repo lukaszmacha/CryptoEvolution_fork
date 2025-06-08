@@ -15,7 +15,8 @@ from reportlab.lib.utils import ImageReader
 from source.agent import AgentHandler
 from source.plotting import ClassificationTestingPlotResponsibilityChain, \
     ClassificationTrainingPlotResponsibilityChain, PlotResponsibilityChainBase, \
-    PlotTestingHistoryResponsibilityChain, PlotTrainingHistoryResponsibilityChain
+    PlotTestingHistoryResponsibilityChain, PlotTrainingHistoryResponsibilityChain, \
+    SummaryPlotResponsibilityChain
 from source.training import TrainingConfig
 
 class TrainingHandler():
@@ -79,11 +80,14 @@ class TrainingHandler():
         classification_training_plot_chain.add_next_chain_link(ClassificationTestingPlotResponsibilityChain())
         plot_training_history_chain = PlotTrainingHistoryResponsibilityChain()
         plot_training_history_chain.add_next_chain_link(classification_training_plot_chain)
-        self.__plotting_chain: PlotResponsibilityChainBase = PlotTestingHistoryResponsibilityChain()
-        self.__plotting_chain.add_next_chain_link(plot_training_history_chain)
+        plot_testing_history_chain = PlotTestingHistoryResponsibilityChain()
+        plot_testing_history_chain.add_next_chain_link(plot_training_history_chain)
+        self.__plotting_chain = SummaryPlotResponsibilityChain()
+        self.__plotting_chain.add_next_chain_link(plot_testing_history_chain)
         self.__generated_data: dict = {}
         self.__generated_data['train'] = {}
         self.__generated_data['test'] = {}
+        self.__generated_data['overview'] = {}
         self.__logs: io.StringIO = io.StringIO()
         self.__page_width = page_width
         self.__page_height = page_height
@@ -134,6 +138,15 @@ class TrainingHandler():
             self.__generated_data['test'][iteration] = {}
             for key, data in zip(key_list, data_list):
                 self.__generated_data['test'][iteration][key] = data
+
+        self.__generated_data['overview']['summary'] = {
+            'train': self.__generated_data['train'].get('summary', None),
+            'test': self.__generated_data['test'][0].get('summary', None)
+        }
+        self.__generated_data['overview']['volatility'] = {
+            'train': self.__generated_data['train'].pop('summary', None),
+            'test': self.__generated_data['test'][0].pop('summary', None)
+        }
 
         logging.info(f"Training finished!")
         # except Exception as e:
@@ -277,6 +290,19 @@ class TrainingHandler():
             self.__draw_caption(pdf, "Log output")
             self.__draw_text_body(pdf, preprocessed_logs_chunk)
             pdf.showPage()
+
+        # Draw overiew
+        for key, data in self.__generated_data['overview'].items():
+            if data is not None:
+                plot_buffer = self.__handle_plot_generation({
+                    'key': key,
+                    'plot_data': data
+                })
+                if plot_buffer is not None:
+                    self.__draw_caption(pdf, f"Overview: {key}")
+                    pdf.drawImage(plot_buffer, 0.5 * inch, 1 * inch, width = letter[0] - 1 * inch,
+                                  height = letter[1] - 2 * inch)
+                    pdf.showPage()
 
         # Draw training plot
         for key, data in self.__generated_data['train'].items():
