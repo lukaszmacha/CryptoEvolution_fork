@@ -22,7 +22,7 @@ class VGGceptionCnnBluePrint(BluePrintBase):
     """
 
     def instantiate_model(self, input_shape: tuple[int, int], output_length: int, spatial_data_shape: tuple[int, int],
-                          number_of_filters: int = 64, cnn_squeezing_coeff: int = 2, dense_squeezing_coeff: int = 2,
+                          number_of_filters: int = 32, cnn_squeezing_coeff: int = 2, dense_squeezing_coeff: int = 2,
                           dense_repetition_coeff: int = 1, filters_number_coeff: int = 2) -> ModelAdapterBase:
         """
         Creates and returns a hybrid VGG-Xception CNN model according to specified parameters.

@@ -63,10 +63,11 @@ class ClassificationLearningStrategyHandler(LearningStrategyHandlerBase):
                 "epochs": nr_of_episodes,
                 "callbacks": callbacks
             }
-            from imblearn.over_sampling import SMOTE
+            from imblearn.over_sampling import ADASYN
             input_data = np.squeeze(input_data, axis=1)
             output_data = np.argmax(output_data, axis=1)
-            input_data, output_data = SMOTE(sampling_strategy='auto').fit_resample(input_data, output_data)
+            sampling_strategy = {0: 10000, 1: 10000, 2: 10000}
+            input_data, output_data = ADASYN(sampling_strategy=sampling_strategy).fit_resample(input_data, output_data)
             input_data = np.expand_dims(np.array(input_data), axis = 1)
             nr_of_classes = len(environment.get_trading_consts().OUTPUT_CLASSES)
             output_data = to_categorical(np.array(output_data), num_classes = nr_of_classes)
