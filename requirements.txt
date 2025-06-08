@@ -137,3 +137,4 @@ wrapt==1.12.1
 xmltodict==0.14.2
 yarl==1.20.0
 zipp==3.21.0
+imbalanced-learn==0.12.4
