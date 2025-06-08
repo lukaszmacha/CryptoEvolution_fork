@@ -6,6 +6,9 @@ from .model_building_blocks.vgg16_block import Vgg16Block
 from .model_building_blocks.xception_block import XceptionBlock
 from .model_adapters.model_adapter_base import ModelAdapterBase
 from .model_adapters.tf_model_adapter import TFModelAdapter
+from .model_adapters.sci_kit_learn_model_adapter import SciKitLearnModelAdapter
 from .model_blue_prints.blue_print_base import BluePrintBase
 from .model_blue_prints.mock_blue_print import MockBluePrint
 from .model_blue_prints.vggception_cnn_blue_print import VGGceptionCnnBluePrint
+from .model_blue_prints.svm_blue_print import SVMBluePrint
+from .model_blue_prints.cdt_1d_cnn_blue_print import CDT1DCnnBluePrint

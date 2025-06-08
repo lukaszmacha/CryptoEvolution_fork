@@ -1,5 +1,5 @@
 # scripts/create_data.py
- 
+
 # global imports
 import argparse
 import asyncio
@@ -12,7 +12,10 @@ import sys
 from source.aws import AWSHandler
 from source.data_handling.data_handler import DataHandler
 from source.indicators import DonchainChannelsIndicatorHandler, \
-    MovingVolumeProfileIndicatorHandler, StochasticOscillatorIndicatorHandler
+    MovingVolumeProfileIndicatorHandler, StochasticOscillatorIndicatorHandler, \
+    ExponentialMovingAverageIndicatorHandler, MACDIndicatorHandler, \
+    BollingerBandsIndicatorHandler, OnBalanceVolumeIndicatorHandler, \
+    RelativeStrengthIndexIndicatorHandler, VolatilityIndicatorHandler
 from source.utils import Granularity
 
 def str_to_granularity(granularity_str):
@@ -35,17 +38,29 @@ def str_to_list_of_indicators(list_of_indicators_str):
     indicators_map = {
         'donchain_channels': DonchainChannelsIndicatorHandler(),
         'moving_volume_profile': MovingVolumeProfileIndicatorHandler(),
-        'stochastic_oscillator': StochasticOscillatorIndicatorHandler()
+        'stochastic_oscillator': StochasticOscillatorIndicatorHandler(),
+        'ema': ExponentialMovingAverageIndicatorHandler(),
+        'macd': MACDIndicatorHandler(),
+        'bollinger_bands': BollingerBandsIndicatorHandler(),
+        'on_balance_volume': OnBalanceVolumeIndicatorHandler(),
+        'relative_strength_index': RelativeStrengthIndexIndicatorHandler(),
+        'volatility': VolatilityIndicatorHandler()
     }
+
+    if list_of_indicators_str == 'all':
+        # If 'all' is specified, return all available indicators
+        list_of_indicators_str = ','.join(indicators_map.keys())
+
     list_of_indicators = []
     for indicator_str in list_of_indicators_str.split(','):
         list_of_indicators.append(indicators_map.get(indicator_str))
 
-    return list_of_indicators
+    return list_of_indicators, list_of_indicators_str
 
 async def main(trading_pair, start_date, end_date, granularity_str, list_of_indicators_str) -> bool:
     try:
-        data_handler = DataHandler(str_to_list_of_indicators(list_of_indicators_str))
+        list_of_indicators, list_of_indicators_str = str_to_list_of_indicators(list_of_indicators_str)
+        data_handler = DataHandler(list_of_indicators)
         data = await data_handler.prepare_data(trading_pair, start_date, end_date, str_to_granularity(granularity_str))
         csv_data_buffer = io.StringIO()
         data.to_csv(csv_data_buffer, index = True)
@@ -73,7 +88,7 @@ if __name__ == "__main__":
     parser.add_argument('--list_of_indicators', type = str, required = False,
                         help = '''List of indicators, that looks like: indicator_1,indicator_2,...,indicator_N.
                         Possible indicators are: donchain_channels, moving_volume_profile, stochastic_oscillator.''')
-    
+
     if sys.platform.startswith('win'):
         policy = asyncio.WindowsSelectorEventLoopPolicy()
     else:

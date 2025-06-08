@@ -4,6 +4,7 @@
 import io
 import logging
 import random
+import numpy as np
 from contextlib import redirect_stdout
 from tensorflow.keras.callbacks import Callback
 from typing import Any, Callable, Optional
@@ -41,18 +42,27 @@ class AgentHandler():
         if model_load_path is not None:
             self.__agent.load_model(model_load_path)
 
-        captured_output = io.StringIO()
-        with redirect_stdout(captured_output): #TODO: Create an callback logger
-            key, report_data = self.__learning_strategy_handler.fit(self.__agent, self.__trading_environment,
+        # captured_output = io.StringIO()
+        # with redirect_stdout(captured_output): #TODO: Create an callback logger
+        key, report_data = self.__learning_strategy_handler.fit(self.__agent, self.__trading_environment,
                                                                     nr_of_steps, nr_of_episodes, callbacks)
 
-            for line in captured_output.getvalue().split('\n'):
-                if line.strip():
-                    logging.info(line)
+            # for line in captured_output.getvalue().split('\n'):
+            #     if line.strip():
+            #         logging.info(line)
         self.__trained = True
 
         if model_save_path is not None:
             self.__agent.save_model(model_save_path)
+
+        env_length = self.__trading_environment.get_environment_length()
+        currency_prices = self.__trading_environment.get_data_for_iteration(['close'], 0, env_length - 1)
+        volatility = self.__trading_environment.get_data_for_iteration(['volatility'], 0, env_length - 1)
+        _, out = self.__trading_environment.get_labeled_data()
+        key.append('summary')
+        report_data.append({"price": currency_prices,
+                            "volatility": volatility,
+                            "labels": out})
 
         return key, report_data
 
@@ -67,8 +77,16 @@ class AgentHandler():
 
         report_data = {}
         key = {}
-        for i in range(repeat):
-            env_length = self.__trading_environment.get_environment_length()
+        env_length = self.__trading_environment.get_environment_length()
+        currency_prices = self.__trading_environment.get_data_for_iteration(['close'], 0, env_length - 1)
+        volatility = self.__trading_environment.get_data_for_iteration(['volatility'], 0, env_length - 1)
+        _, out = self.__trading_environment.get_labeled_data()
+        key[0] = ['summary']
+        report_data[0] = [{"price": currency_prices,
+                           "volatility": volatility,
+                           "labels": out}]
+
+        for i in range(1, repeat + 1):
             window_size = self.__trading_environment.get_trading_consts().WINDOW_SIZE
             current_iteration = random.randint(window_size, int(env_length/2))
             self.__trading_environment.reset(current_iteration)
