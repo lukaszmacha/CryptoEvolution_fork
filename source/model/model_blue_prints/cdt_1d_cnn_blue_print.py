@@ -26,16 +26,18 @@ class CDT1DCnnBluePrint(BluePrintBase):
     increasing channel dimensions from 1 to 128.
     """
 
-    def instantiate_model(self, input_shape: tuple[int, int], output_length: int, spatial_data_shape: tuple[int, int],
-                      filters_multiplier: float = 1.5, **kwargs) -> ModelAdapterBase:
+    def instantiate_model(self, input_shape: tuple[int, int], output_length: int, spatial_data_shape: tuple[int, int], **kwargs) -> ModelAdapterBase:
         """
-        Enhanced CDT 1-D CNN with improved architecture for better performance.
+        Creates and returns a CDT 1-D CNN model according to the specified architecture.
 
         Parameters:
-            input_shape: Shape of the input tensor
-            output_length: Number of output classes
-            spatial_data_shape: Shape of spatial data component
-            filters_multiplier: Factor to increase filter counts (default: 1.5)
+            input_shape (tuple[int, int]): Shape of the input tensor
+            output_length (int): Number of output classes
+            time_steps (int): Number of time steps in the input data (default: 24)
+            **kwargs: Additional parameters (not used in this blueprint)
+
+        Returns:
+            ModelAdapterBase: Model adapter wrapping the Keras model
         """
 
         spatial_data_rows, spatial_data_cols = spatial_data_shape
@@ -47,58 +49,33 @@ class CDT1DCnnBluePrint(BluePrintBase):
         non_spatial_part = layers.Lambda(lambda x: x[:, spatial_data_length:])(reshaped_input_vector)
         reshaped_spatial_part = layers.Reshape((spatial_data_rows, spatial_data_cols, 1))(spatial_part)
 
-        # Enhanced filter counts
-        base_filters = int(32 * filters_multiplier)
-
-        # First block - increased filters
-        x = layers.Conv2D(filters=base_filters, kernel_size=(4, 1), activation='relu', padding='same')(reshaped_spatial_part)
-        x = layers.Conv2D(filters=base_filters, kernel_size=(4, 1), activation='relu', padding='same')(x)  # Added depth
+        # First CDT 1-D convolutional layer with kernel size 4, 32 filters
+        x = layers.Conv2D(filters=32, kernel_size=(4, 1), activation='relu', padding='same')(reshaped_spatial_part)
         x = layers.MaxPooling2D(pool_size=(4, 1))(x)
         x = layers.BatchNormalization()(x)
 
-        # Second block - increased filters
-        x = layers.Conv2D(filters=base_filters*2, kernel_size=(3, 1), activation='relu', padding='same')(x)
-        x = layers.Conv2D(filters=base_filters*2, kernel_size=(3, 1), activation='relu', padding='same')(x)  # Added depth
+        # Second CDT 1-D convolutional layer with kernel size 3, 64 filters
+        x = layers.Conv2D(filters=64, kernel_size=(3, 1), activation='relu', padding='same')(x)
         x = layers.MaxPooling2D(pool_size=(3, 1))(x)
         x = layers.BatchNormalization()(x)
 
-        # Third block - increased filters
-        x = layers.Conv2D(filters=base_filters*4, kernel_size=(2, 1), activation='relu', padding='same')(x)
-        x = layers.Conv2D(filters=base_filters*4, kernel_size=(2, 1), activation='relu', padding='same')(x)  # Added depth
+        # Third CDT 1-D convolutional layer with kernel size 2, 128 filters
+        x = layers.Conv2D(filters=128, kernel_size=(2, 1), activation='relu', padding='same')(x)
         x = layers.MaxPooling2D(pool_size=(2, 1))(x)
         x = layers.BatchNormalization()(x)
 
-        # Add residual/skip connections for better gradient flow
-        if spatial_data_rows >= 24:  # Only if we have enough spatial dimensions
-            shortcut = layers.Conv2D(filters=base_filters*4, kernel_size=(1, 1), strides=(24, 1), padding='same')(reshaped_spatial_part)
-            shortcut = layers.BatchNormalization()(shortcut)
-            x = layers.add([x, shortcut])
-            x = layers.Activation('relu')(x)
+        # Flatten the output for fully connected layers
+        x = layers.Flatten()(x)
 
-        # Flatten CNN output
-        cnn_flattened = layers.Flatten()(x)
-
-        # Process non-spatial features separately then combine
-        non_spatial_processed = layers.Dense(256, activation='relu')(non_spatial_part)
-        non_spatial_processed = layers.BatchNormalization()(non_spatial_processed)
-
-        # Combine CNN output with non-spatial features
-        combined = layers.Concatenate()([cnn_flattened, non_spatial_processed])
-
-        # First fully connected layer with more units
-        x = layers.Dense(1500, activation='relu')(combined)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.4)(x)  # Slightly increased dropout
-
-        # Second fully connected layer
-        x = layers.Dense(750, activation='relu')(x)
+        # First fully connected layer with 1,000 units
+        x = layers.Dense(1000, activation='relu')(x)
         x = layers.BatchNormalization()(x)
         x = layers.Dropout(0.3)(x)
 
-        # Additional layer for more capacity
-        x = layers.Dense(250, activation='relu')(x)
+        # Second fully connected layer with 500 units
+        x = layers.Dense(500, activation='relu')(x)
         x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
+        x = layers.Dropout(0.3)(x)
 
         # Output softmax layer
         output = layers.Dense(output_length, activation='softmax')(x)
