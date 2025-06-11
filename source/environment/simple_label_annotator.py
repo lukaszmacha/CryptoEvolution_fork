@@ -22,9 +22,9 @@ class SimpleLabelAnnotator(LabelAnnotatorBase):
     def _classify_trend(self, price_diff: float, volatility: float) -> int:
         """"""
 
-        if price_diff > self.__alpha * volatility:
+        if price_diff > self.__alpha // 10:
             return self._output_classes.UP_TREND
-        elif price_diff < -self.__alpha * volatility:
+        elif price_diff < -self.__alpha // 10:
             return self._output_classes.DOWN_TREND
         else:
             return self._output_classes.NO_TREND

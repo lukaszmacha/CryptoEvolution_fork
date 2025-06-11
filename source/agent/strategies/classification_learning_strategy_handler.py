@@ -50,12 +50,8 @@ class ClassificationLearningStrategyHandler(LearningStrategyHandlerBase):
             logging.warning("Batch size is zero or negative, using value of 1 instead.")
             batch_size = 1
 
-        env_length = environment.get_environment_length()
-        currency_prices = environment.get_data_for_iteration(['close'], 0, env_length - 1)
-        currency_prices = (np.array(currency_prices) / currency_prices[0]).tolist()
         tensorflow_arguments = {}
         learning_curve_data = {}
-
         if isinstance(agent._model_adapter, TFModelAdapter):
             logging.info("Using TensorFlow model adapter for training.")
             tensorflow_arguments = {
@@ -63,14 +59,6 @@ class ClassificationLearningStrategyHandler(LearningStrategyHandlerBase):
                 "epochs": nr_of_episodes,
                 "callbacks": callbacks
             }
-            from imblearn.over_sampling import ADASYN
-            input_data = np.squeeze(input_data, axis=1)
-            output_data = np.argmax(output_data, axis=1)
-            sampling_strategy = {0: 10000, 1: 10000, 2: 10000}
-            input_data, output_data = ADASYN(sampling_strategy=sampling_strategy).fit_resample(input_data, output_data)
-            input_data = np.expand_dims(np.array(input_data), axis = 1)
-            nr_of_classes = len(environment.get_trading_consts().OUTPUT_CLASSES)
-            output_data = to_categorical(np.array(output_data), num_classes = nr_of_classes)
 
         logging.info(f"{np.sum(output_data, axis = 0)}")
         logging.info(f"Input data shape: {input_data.shape}, Output data shape: {output_data.shape}")
@@ -96,6 +84,10 @@ class ClassificationLearningStrategyHandler(LearningStrategyHandlerBase):
                 "valid_scores_mean": np.mean(valid_scores, axis=1),
                 "valid_scores_std": np.std(valid_scores, axis=1)
             }
+
+        env_length = environment.get_environment_length()
+        currency_prices = environment.get_data_for_iteration(['close'], 0, env_length - 1)
+        currency_prices = (np.array(currency_prices) / currency_prices[0]).tolist()
 
         return [ClassificationLearningStrategyHandler.PLOTTING_KEY], \
             [{"history": agent.classification_fit(input_data, output_data, **tensorflow_arguments),

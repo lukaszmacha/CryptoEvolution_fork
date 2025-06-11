@@ -2,6 +2,7 @@
 
 import tensorflow as tf
 from tensorflow.keras.layers import SeparableConv2D, Conv2D, MaxPooling2D, BatchNormalization, Activation, Add
+from tensorflow.keras import regularizers
 
 class XceptionBlock:
     """
@@ -66,19 +67,22 @@ class XceptionBlock:
         # Depthwise separable convolution
         x_1 = SeparableConv2D(self.__separable_conv_2d_1_nr_of_filters,
                               self.__separable_conv_2d_1_kernel_size,
-                              padding = 'same', use_bias = False)(input_tensor)
+                              padding = 'same', use_bias = False,
+                              kernel_regularizer = None)(input_tensor)
         x_1 = BatchNormalization()(x_1)
         x_1 = Activation('relu')(x_1)
         x_1 = SeparableConv2D(self.__separable_conv_2d_2_nr_of_filters,
                               self.__separable_conv_2d_2_kernel_size,
-                              padding = 'same', use_bias = False)(x_1)
+                              padding = 'same', use_bias = False,
+                              kernel_regularizer = None)(x_1)
         x_1 = BatchNormalization()(x_1)
         x_1 = Activation('relu')(x_1)
         x_1 = MaxPooling2D(self.__max_pooling_2d_kernel_size, strides=self.__max_pooling_2d_step, padding = 'same')(x_1)
 
         # Residual connection
         x_2 = Conv2D(self.__conv_2d_nr_of_filters, self.__conv_2d_kernel_size, strides = self.__conv_2d_step,
-                     padding = 'same', use_bias = False)(input_tensor)
+                     padding = 'same', use_bias = False,
+                     kernel_regularizer = regularizers.l1_l2(l1=0.001, l2=0.001))(input_tensor)
         x_2 = BatchNormalization()(x_2)
 
         output_tensor = Add()([x_1, x_2])
