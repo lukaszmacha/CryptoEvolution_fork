@@ -6,6 +6,8 @@ from typing import Callable
 from tensorflow.keras.optimizers import Optimizer
 from typing import Any, Optional
 from sklearn.model_selection import train_test_split
+import numpy as np
+from tensorflow.keras.utils import to_categorical
 
 # local imports
 from source.model import ModelAdapterBase
@@ -60,6 +62,16 @@ class TFModelAdapter(ModelAdapterBase):
 
         X_train, X_val, y_train, y_val = train_test_split(input_data, output_data, test_size=0.1,
                                                           random_state=42, stratify=output_data)
+
+        X_train = np.squeeze(X_train, axis=1)
+        y_train = np.argmax(y_train, axis=1)
+
+        from imblearn.over_sampling import ADASYN
+        sampling_strategy = {0: 10000, 1: 10000, 2: 10000}
+        X_train, y_train = ADASYN(sampling_strategy=sampling_strategy).fit_resample(X_train, y_train)
+        X_train = np.expand_dims(np.array(X_train), axis=1)
+        y_train = to_categorical(np.array(y_train), num_classes=3)
+
         return self.__model.fit(X_train, y_train,
                                 validation_data=(X_val, y_val), **kwargs).history
 

@@ -2,7 +2,7 @@
 
 # global imports
 import math
-from tensorflow.keras import Model, layers
+from tensorflow.keras import Model, layers, regularizers
 
 # local imports
 from source.model import BluePrintBase
@@ -22,7 +22,7 @@ class VGGceptionCnnBluePrint(BluePrintBase):
     """
 
     def instantiate_model(self, input_shape: tuple[int, int], output_length: int, spatial_data_shape: tuple[int, int],
-                          number_of_filters: int = 32, cnn_squeezing_coeff: int = 2, dense_squeezing_coeff: int = 2,
+                          number_of_filters: int = 16, cnn_squeezing_coeff: int = 2, dense_squeezing_coeff: int = 2,
                           dense_repetition_coeff: int = 1, filters_number_coeff: int = 2) -> ModelAdapterBase:
         """
         Creates and returns a hybrid VGG-Xception CNN model according to specified parameters.
@@ -68,6 +68,8 @@ class VGGceptionCnnBluePrint(BluePrintBase):
                                     [number_of_filters, number_of_filters, number_of_filters],
                                     [(cnn_squeezing_coeff, 1), (cnn_squeezing_coeff, 1)])(cnn_part)
             cnn_part = layers.BatchNormalization()(cnn_part)
+            cnn_part = layers.Dense(number_of_filters // 4, activation='relu')(cnn_part)
+            cnn_part = layers.Dropout(0.3)(cnn_part)
 
         flatten_cnn_part = layers.Flatten()(cnn_part)
         concatenated_parts = layers.Concatenate()([flatten_cnn_part, non_spatial_part])
@@ -82,7 +84,8 @@ class VGGceptionCnnBluePrint(BluePrintBase):
         nr_of_dense_layers = int(math.log(closest_smaller_power_of_coeff, dense_squeezing_coeff))
         for _ in range(nr_of_dense_layers):
             for _ in range(dense_repetition_coeff):
-                dense = layers.Dense(number_of_nodes, activation='relu')(dense)
+                dense = layers.Dense(number_of_nodes, activation='relu',
+                                     kernel_regularizer=None)(dense)
             dense = layers.BatchNormalization()(dense)
             number_of_nodes //= dense_squeezing_coeff
             if int(math.log(number_of_nodes, 10)) == int(math.log(output_length, 10)) + 1:

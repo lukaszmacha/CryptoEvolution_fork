@@ -5,7 +5,7 @@ from gym import Env
 from gym.spaces import Discrete, Box
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 import math
 import random
 from types import SimpleNamespace
@@ -158,7 +158,7 @@ class TradingEnvironment(Env):
 
         current_market_data = self.__data[self.__mode].iloc[index]
         current_market_data_no_index = current_market_data.select_dtypes(include = [np.number])
-        normalized_current_market_data_values = pd.DataFrame(StandardScaler().fit_transform(current_market_data_no_index),
+        normalized_current_market_data_values = pd.DataFrame(MinMaxScaler().fit_transform(current_market_data_no_index),
                                                              columns = current_market_data_no_index.columns).values
         current_marked_data_list = normalized_current_market_data_values.ravel().tolist()
 
